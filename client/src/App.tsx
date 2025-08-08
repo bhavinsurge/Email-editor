@@ -5,12 +5,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import EmailBuilderPage from "@/pages/email-builder";
+import CustomEmailBuilderPage from "@/pages/custom-email-builder";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={EmailBuilderPage} />
+      <Route path="/" component={CustomEmailBuilderPage} />
       <Route path="/email-builder" component={EmailBuilderPage} />
+      <Route path="/custom-email-builder" component={CustomEmailBuilderPage} />
       <Route component={NotFound} />
     </Switch>
   );
