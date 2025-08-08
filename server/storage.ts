@@ -102,6 +102,8 @@ export class MemStorage implements IStorage {
     const template: EmailTemplate = {
       ...templateData,
       id,
+      subject: templateData.subject || null,
+      htmlContent: templateData.htmlContent || null,
       userId: templateData.userId || null,
       createdAt: new Date(),
       updatedAt: new Date(),
