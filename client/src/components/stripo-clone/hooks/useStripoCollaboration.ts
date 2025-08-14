@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { 
-  StripoUser, 
-  StripoComment, 
+import {
+  StripoUser,
+  StripoComment,
   StripoCollaborationEvent,
-  StripoCommentReply 
+  StripoCommentReply
 } from '../types/stripo.types';
 import { nanoid } from 'nanoid';
 
@@ -27,7 +27,7 @@ interface UseStripoCollaborationReturn {
 class MockWebSocket {
   private listeners: { [event: string]: Function[] } = {};
   private isOpen = false;
-  
+
   constructor(private url: string) {
     // Simulate connection
     setTimeout(() => {
@@ -72,7 +72,7 @@ export function useStripoCollaboration(
   const [activeUsers, setActiveUsers] = useState<StripoUser[]>([]);
   const [comments, setComments] = useState<StripoComment[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
-  
+
   const wsRef = useRef<MockWebSocket | null>(null);
   const heartbeatRef = useRef<NodeJS.Timeout>();
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
@@ -83,13 +83,13 @@ export function useStripoCollaboration(
 
     const connectWebSocket = () => {
       setConnectionStatus('connecting');
-      
+
       // Replace with real WebSocket URL
       wsRef.current = new MockWebSocket(`ws://localhost:8080/collaboration/${currentUser.id}`);
-      
+
       wsRef.current.on('open', () => {
         setConnectionStatus('connected');
-        
+
         // Send initial user info
         wsRef.current?.send(JSON.stringify({
           type: 'user_join',
@@ -103,7 +103,7 @@ export function useStripoCollaboration(
         }, 30000);
       });
 
-      wsRef.current.on('message', (event) => {
+      wsRef.current.on('message', (event: any) => {
         try {
           const message = JSON.parse(event.data);
           handleCollaborationEvent(message);
@@ -117,7 +117,7 @@ export function useStripoCollaboration(
         if (heartbeatRef.current) {
           clearInterval(heartbeatRef.current);
         }
-        
+
         // Attempt to reconnect
         reconnectTimeoutRef.current = setTimeout(() => {
           connectWebSocket();
@@ -159,8 +159,8 @@ export function useStripoCollaboration(
         break;
 
       case 'cursor_move':
-        setActiveUsers(prev => prev.map(user => 
-          user.id === event.userId 
+        setActiveUsers(prev => prev.map(user =>
+          user.id === event.userId
             ? { ...user, cursor: event.data }
             : user
         ));
@@ -184,8 +184,8 @@ export function useStripoCollaboration(
   }, []);
 
   const addComment = useCallback((
-    componentId: string, 
-    content: string, 
+    componentId: string,
+    content: string,
     position?: { x: number; y: number }
   ) => {
     if (!currentUser) return;
@@ -218,12 +218,12 @@ export function useStripoCollaboration(
 
     setComments(prev => prev.map(comment =>
       comment.id === commentId
-        ? { 
-            ...comment, 
-            resolved: true, 
-            resolvedBy: currentUser.id, 
-            resolvedAt: new Date().toISOString() 
-          }
+        ? {
+          ...comment,
+          resolved: true,
+          resolvedBy: currentUser.id,
+          resolvedAt: new Date().toISOString()
+        }
         : comment
     ));
 
@@ -265,7 +265,7 @@ export function useStripoCollaboration(
     if (!currentUser) return;
 
     const cursorData = { ...position, componentId };
-    
+
     // Update local state
     setActiveUsers(prev => prev.map(user =>
       user.id === currentUser.id

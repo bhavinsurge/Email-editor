@@ -51,7 +51,7 @@ export interface StripoComponent {
   tracking?: StripoTracking;
 }
 
-export type StripoComponentType = 
+export type StripoComponentType =
   | 'container'
   | 'row'
   | 'column'
@@ -158,7 +158,7 @@ export interface StripoComponentStyles {
   maxHeight?: string;
   minWidth?: string;
   minHeight?: string;
-  
+
   // Spacing
   margin?: string;
   marginTop?: string;
@@ -170,7 +170,7 @@ export interface StripoComponentStyles {
   paddingRight?: string;
   paddingBottom?: string;
   paddingLeft?: string;
-  
+
   // Typography
   fontFamily?: string;
   fontSize?: string;
@@ -182,7 +182,7 @@ export interface StripoComponentStyles {
   textDecoration?: string;
   textTransform?: string;
   color?: string;
-  
+
   // Background
   backgroundColor?: string;
   backgroundImage?: string;
@@ -190,7 +190,7 @@ export interface StripoComponentStyles {
   backgroundPosition?: string;
   backgroundRepeat?: string;
   backgroundAttachment?: string;
-  
+
   // Border
   border?: string;
   borderTop?: string;
@@ -202,14 +202,14 @@ export interface StripoComponentStyles {
   borderTopRightRadius?: string;
   borderBottomLeftRadius?: string;
   borderBottomRightRadius?: string;
-  
+
   // Effects
   boxShadow?: string;
   opacity?: string;
   transform?: string;
   transition?: string;
   filter?: string;
-  
+
   // Flexbox
   flexDirection?: string;
   justifyContent?: string;
@@ -220,18 +220,18 @@ export interface StripoComponentStyles {
   flexShrink?: string;
   flexBasis?: string;
   gap?: string;
-  
+
   // Grid
   gridTemplateColumns?: string;
   gridTemplateRows?: string;
   gridGap?: string;
   gridColumn?: string;
   gridRow?: string;
-  
+
   // Responsive
   mobileStyles?: Partial<StripoComponentStyles>;
   tabletStyles?: Partial<StripoComponentStyles>;
-  
+
   // Custom
   customCSS?: string;
 }
@@ -241,35 +241,35 @@ export interface StripoComponentSettings {
   visible?: boolean;
   hiddenOnMobile?: boolean;
   hiddenOnDesktop?: boolean;
-  
+
   // Responsive
   mobileVisible?: boolean;
   tabletVisible?: boolean;
-  
+
   // Accessibility
   ariaLabel?: string;
   altText?: string;
   title?: string;
-  
+
   // SEO
   nofollow?: boolean;
   noindex?: boolean;
-  
+
   // Tracking
   trackingId?: string;
   analyticsEvent?: string;
-  
+
   // Personalization
   showIf?: StripoCondition[];
   hideIf?: StripoCondition[];
-  
+
   // Content
   autoHeight?: boolean;
   overflow?: 'visible' | 'hidden' | 'scroll' | 'auto';
-  
+
   // Animation
   animation?: StripoAnimation;
-  
+
   // AMP specific
   ampAttributes?: Record<string, any>;
   ampValidation?: boolean;
@@ -379,23 +379,23 @@ export interface StripoTemplateSettings {
   direction: 'ltr' | 'rtl';
   language: string;
   preheaderText?: string;
-  
+
   // Email client compatibility
   outlookCompatibility: boolean;
   appleMail: boolean;
   gmail: boolean;
   yahooMail: boolean;
-  
+
   // Features
   darkModeSupport: boolean;
   ampSupport: boolean;
   interactiveElements: boolean;
-  
+
   // Tracking
   openTracking: boolean;
   clickTracking: boolean;
   unsubscribeLink: boolean;
-  
+
   // Personalization
   mergeTags: StripoVariable[];
   dynamicContent: boolean;
@@ -497,7 +497,7 @@ export interface StripoCollaborationEvent {
   type: 'user_join' | 'user_leave' | 'cursor_move' | 'component_select' | 'component_update' | 'comment_add' | 'comment_resolve';
   userId: string;
   data?: any;
-  timestamp: string;
+  timestamp: number;
 }
 
 export interface StripoVersionHistoryEntry {

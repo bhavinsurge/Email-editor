@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Builder - Professional Email Template Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif'],
+                },
+                colors: {
+                    'email-primary': '#2563eb',
+                    'email-secondary': '#64748b',
+                    'email-accent': '#059669',
+                }
+            }
+        }
+    };
+    </script>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- @COMPONENT: EmailBuilderApp -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Left Sidebar - Component Library -->
+        <!-- @COMPONENT: ComponentLibrary -->
+        <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Header -->
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h1 class="text-xl font-semibold text-gray-900">Email Builder</h1>
+                    <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-cog text-sm"></i>
+                    </button>
+                </div>
+                
+                <!-- Template Actions -->
+                <div class="flex gap-2">
+                    <button class="flex-1 bg-email-primary text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors" data-event="click:newTemplate">
+                        <i class="fas fa-plus mr-2"></i>New Template
+                    </button>
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" data-event="click:loadTemplate">
+                        <i class="fas fa-folder-open"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Component Tabs -->
+            <div class="flex border-b border-gray-200">
+                <button class="flex-1 px-4 py-3 text-sm font-medium text-email-primary border-b-2 border-email-primary bg-blue-50" data-tab="components">
+                    Components
+                </button>
+                <button class="flex-1 px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="templates">
+                    Templates
+                </button>
+            </div>
+
+            <!-- Components Panel -->
+            <div class="flex-1 overflow-y-auto p-4" data-panel="components">
+                <div class="space-y-4">
+                    <!-- Structure Components -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Structure</h3>
+                        <div class="space-y-2">
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="container">
+                                <div class="flex items-center">
+                                    <i class="fas fa-square text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Container</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="columns">
+                                <div class="flex items-center">
+                                    <i class="fas fa-columns text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Columns</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="spacer">
+                                <div class="flex items-center">
+                                    <i class="fas fa-grip-lines text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Spacer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Components -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Content</h3>
+                        <div class="space-y-2">
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="text">
+                                <div class="flex items-center">
+                                    <i class="fas fa-font text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Text</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="image">
+                                <div class="flex items-center">
+                                    <i class="fas fa-image text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Image</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="button">
+                                <div class="flex items-center">
+                                    <i class="fas fa-hand-pointer text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Button</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="header">
+                                <div class="flex items-center">
+                                    <i class="fas fa-heading text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Header</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="footer">
+                                <div class="flex items-center">
+                                    <i class="fas fa-window-minimize text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Footer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Components -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Advanced</h3>
+                        <div class="space-y-2">
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="social">
+                                <div class="flex items-center">
+                                    <i class="fas fa-share-alt text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Social Links</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="divider">
+                                <div class="flex items-center">
+                                    <i class="fas fa-minus text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">Divider</span>
+                                </div>
+                            </div>
+                            <div class="p-3 border-2 border-dashed border-gray-200 rounded-lg cursor-grab hover:border-email-primary hover:bg-blue-50 transition-colors" draggable="true" data-component="html">
+                                <div class="flex items-center">
+                                    <i class="fas fa-code text-gray-400 mr-3"></i>
+                                    <span class="text-sm font-medium">HTML Block</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Templates Panel (Hidden by default) -->
+            <div class="flex-1 overflow-y-auto p-4 hidden" data-panel="templates">
+                <div class="grid grid-cols-1 gap-4">
+                    <!-- Template thumbnails would go here -->
+                    <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow">
+                        <div class="bg-gray-100 aspect-[4/3] rounded mb-2"></div>
+                        <p class="text-sm font-medium">Newsletter Template</p>
+                        <p class="text-xs text-gray-500">Marketing</p>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow">
+                        <div class="bg-gray-100 aspect-[4/3] rounded mb-2"></div>
+                        <p class="text-sm font-medium">Welcome Email</p>
+                        <p class="text-xs text-gray-500">Onboarding</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: ComponentLibrary -->
+
+        <!-- Main Editor Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Top Toolbar -->
+            <!-- @COMPONENT: EditorToolbar -->
+            <div class="bg-white border-b border-gray-200 px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <!-- Template Name -->
+                        <input type="text" value="Untitled Template" class="text-lg font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-email-primary rounded px-2 py-1" data-bind="template.name">
+                        
+                        <!-- Status -->
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <i class="fas fa-circle text-yellow-400 mr-1 text-xs"></i>
+                            Draft
+                        </span>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <!-- Undo/Redo -->
+                        <div class="flex items-center">
+                            <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-50" data-event="click:undo" disabled>
+                                <i class="fas fa-undo text-sm"></i>
+                            </button>
+                            <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-50" data-event="click:redo" disabled>
+                                <i class="fas fa-redo text-sm"></i>
+                            </button>
+                        </div>
+
+                        <div class="border-l border-gray-200 h-6"></div>
+
+                        <!-- View Toggle -->
+                        <div class="flex bg-gray-100 rounded-lg p-1">
+                            <button class="px-3 py-1 text-sm font-medium text-white bg-email-primary rounded-md" data-view="design">
+                                Design
+                            </button>
+                            <button class="px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-900" data-view="preview">
+                                Preview
+                            </button>
+                            <button class="px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-900" data-view="code">
+                                HTML
+                            </button>
+                        </div>
+
+                        <div class="border-l border-gray-200 h-6"></div>
+
+                        <!-- Actions -->
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50" data-event="click:save">
+                            <i class="fas fa-save mr-2"></i>Save
+                        </button>
+                        
+                        <button class="px-4 py-2 bg-email-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors" data-event="click:export">
+                            <i class="fas fa-download mr-2"></i>Export HTML
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: EditorToolbar -->
+
+            <!-- Editor Content Area -->
+            <div class="flex-1 flex">
+                <!-- Canvas Area -->
+                <!-- @COMPONENT: EmailCanvas -->
+                <div class="flex-1 bg-gray-100 p-6 overflow-auto">
+                    <div class="max-w-2xl mx-auto">
+                        <!-- Email Canvas -->
+                        <div class="bg-white shadow-lg rounded-lg overflow-hidden" data-mock="true" data-implementation="EmailBuilder canvas integration point">
+                            <!-- Email Header -->
+                            <div class="bg-email-primary text-white p-6 text-center" data-component-instance="header">
+                                <h1 class="text-2xl font-bold mb-2" data-bind="email.header.title">Welcome to Our Newsletter</h1>
+                                <p class="text-blue-100" data-bind="email.header.subtitle">Stay updated with our latest news and offers</p>
+                            </div>
+
+                            <!-- Email Content -->
+                            <div class="p-6" data-component-instance="container">
+                                <!-- Text Block -->
+                                <div class="mb-6" data-component-instance="text" data-mock="true">
+                                    <h2 class="text-xl font-semibold text-gray-900 mb-3">Hello [First Name],</h2>
+                                    <p class="text-gray-600 leading-relaxed mb-4">
+                                        We're excited to share some amazing updates with you. Our team has been working hard to bring you the best experience possible.
+                                    </p>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        This is your personalized newsletter with content tailored just for you.
+                                    </p>
+                                </div>
+
+                                <!-- Image Block -->
+                                <div class="mb-6" data-component-instance="image" data-mock="true">
+                                    <!-- Modern office workspace with laptops and coffee -->
+                                    <img src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400" alt="Modern office workspace" class="w-full rounded-lg shadow-sm">
+                                </div>
+
+                                <!-- Two Column Layout -->
+                                <div class="grid md:grid-cols-2 gap-6 mb-6" data-component-instance="columns" data-mock="true">
+                                    <div class="text-center">
+                                        <!-- Digital marketing analytics dashboard -->
+                                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Analytics dashboard" class="w-full rounded-lg shadow-sm mb-4">
+                                        <h3 class="font-semibold text-gray-900 mb-2">Analytics & Insights</h3>
+                                        <p class="text-gray-600 text-sm">Track your performance with our advanced analytics.</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <!-- Team collaboration in modern workspace -->
+                                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Team collaboration" class="w-full rounded-lg shadow-sm mb-4">
+                                        <h3 class="font-semibold text-gray-900 mb-2">Team Collaboration</h3>
+                                        <p class="text-gray-600 text-sm">Work together seamlessly with your team members.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Call to Action Button -->
+                                <div class="text-center mb-6" data-component-instance="button" data-mock="true">
+                                    <a href="#" class="inline-block bg-email-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                        Get Started Today
+                                    </a>
+                                </div>
+
+                                <!-- Divider -->
+                                <div class="border-t border-gray-200 my-6" data-component-instance="divider"></div>
+
+                                <!-- Social Links -->
+                                <div class="text-center" data-component-instance="social" data-mock="true">
+                                    <p class="text-gray-600 mb-4">Follow us on social media:</p>
+                                    <div class="flex justify-center space-x-4">
+                                        <a href="#" class="text-email-primary hover:text-blue-700">
+                                            <i class="fab fa-facebook text-xl"></i>
+                                        </a>
+                                        <a href="#" class="text-email-primary hover:text-blue-700">
+                                            <i class="fab fa-twitter text-xl"></i>
+                                        </a>
+                                        <a href="#" class="text-email-primary hover:text-blue-700">
+                                            <i class="fab fa-linkedin text-xl"></i>
+                                        </a>
+                                        <a href="#" class="text-email-primary hover:text-blue-700">
+                                            <i class="fab fa-instagram text-xl"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email Footer -->
+                            <div class="bg-gray-50 p-6 text-center text-sm text-gray-500" data-component-instance="footer">
+                                <p class="mb-2">© 2024 Your Company Name. All rights reserved.</p>
+                                <p class="mb-2">123 Business Street, City, State 12345</p>
+                                <p>
+                                    <a href="#" class="text-email-primary hover:underline">Unsubscribe</a> | 
+                                    <a href="#" class="text-email-primary hover:underline">Privacy Policy</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Drop Zone Indicator -->
+                        <div class="mt-4 p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500 hidden" data-drop-zone="true">
+                            <i class="fas fa-plus-circle text-2xl mb-2"></i>
+                            <p>Drop components here to add to your email</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: EmailCanvas -->
+
+                <!-- Right Properties Panel -->
+                <!-- @COMPONENT: PropertiesPanel -->
+                <div class="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+                    <!-- Panel Header -->
+                    <div class="p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Properties</h3>
+                        <p class="text-sm text-gray-500 mt-1">Configure the selected component</p>
+                    </div>
+
+                    <!-- No Selection State -->
+                    <div class="p-4 text-center text-gray-500" data-state="no-selection">
+                        <i class="fas fa-mouse-pointer text-3xl mb-3"></i>
+                        <p class="text-sm">Select a component to edit its properties</p>
+                    </div>
+
+                    <!-- Component Properties (Hidden by default, shown when component selected) -->
+                    <div class="p-4 space-y-6 hidden" data-state="component-selected" data-implementation="Show based on selected component type">
+                        <!-- Text Properties -->
+                        <div data-component-props="text">
+                            <h4 class="font-medium text-gray-900 mb-3">Text Content</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                                    <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent resize-none" rows="4" data-bind="selectedComponent.content">Hello [First Name],</textarea>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Font Size</label>
+                                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent" data-bind="selectedComponent.fontSize">
+                                            <option>12px</option>
+                                            <option>14px</option>
+                                            <option selected>16px</option>
+                                            <option>18px</option>
+                                            <option>20px</option>
+                                            <option>24px</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Font Weight</label>
+                                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent" data-bind="selectedComponent.fontWeight">
+                                            <option>Normal</option>
+                                            <option>Medium</option>
+                                            <option>Semibold</option>
+                                            <option>Bold</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="color" value="#374151" class="w-12 h-8 border border-gray-300 rounded cursor-pointer" data-bind="selectedComponent.color">
+                                        <input type="text" value="#374151" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent" data-bind="selectedComponent.colorHex">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Text Alignment</label>
+                                    <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                                        <button class="flex-1 px-3 py-2 bg-email-primary text-white text-sm" data-align="left">
+                                            <i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button class="flex-1 px-3 py-2 hover:bg-gray-50 text-sm" data-align="center">
+                                            <i class="fas fa-align-center"></i>
+                                        </button>
+                                        <button class="flex-1 px-3 py-2 hover:bg-gray-50 text-sm" data-align="right">
+                                            <i class="fas fa-align-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Spacing & Layout -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h4 class="font-medium text-gray-900 mb-3">Spacing & Layout</h4>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Padding</label>
+                                        <input type="number" value="16" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent" data-bind="selectedComponent.padding">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Margin</label>
+                                        <input type="number" value="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent" data-bind="selectedComponent.margin">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="color" value="#ffffff" class="w-12 h-8 border border-gray-300 rounded cursor-pointer" data-bind="selectedComponent.backgroundColor">
+                                        <input type="text" value="#ffffff" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent" data-bind="selectedComponent.backgroundColorHex">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Options -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h4 class="font-medium text-gray-900 mb-3">Advanced</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">CSS Class</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent" placeholder="custom-class" data-bind="selectedComponent.cssClass">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Custom CSS</label>
+                                    <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent font-mono text-sm resize-none" rows="3" placeholder="color: red;" data-bind="selectedComponent.customCss"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: PropertiesPanel -->
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: EmailBuilderApp -->
+
+    <!-- Toast Notifications -->
+    <div class="fixed top-4 right-4 z-50" data-component="toasts">
+        <!-- Toast messages will appear here -->
+    </div>
+
+    <!-- Modals -->
+    <!-- Export Modal -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" data-modal="export">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">Export Email HTML</h3>
+                        <button class="text-gray-400 hover:text-gray-600" data-event="click:closeModal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Export Format</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-email-primary focus:border-transparent">
+                            <option>HTML with inline CSS</option>
+                            <option>HTML with embedded CSS</option>
+                            <option>HTML only</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">HTML Preview</label>
+                        <textarea class="w-full h-64 px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm resize-none focus:ring-2 focus:ring-email-primary focus:border-transparent" readonly data-mock="true" data-bind="emailHtml"><!DOCTYPE html>
+<html>
+<head>
+    <title>Email Template</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <!-- Email content will be generated here -->
+</body>
+</html></textarea>
+                    </div>
+                    <div class="flex justify-between">
+                        <button class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50" data-event="click:copyHtml">
+                            <i class="fas fa-copy mr-2"></i>Copy to Clipboard
+                        </button>
+                        <div class="space-x-3">
+                            <button class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50" data-event="click:closeModal">
+                                Cancel
+                            </button>
+                            <button class="px-4 py-2 bg-email-primary text-white rounded-lg hover:bg-blue-700" data-event="click:downloadHtml">
+                                <i class="fas fa-download mr-2"></i>Download HTML
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Email Builder Implementation
+        (function() {
+            // TODO: Implement actual EmailBuilder integration
+            // Fix: Use named imports instead of default import
+            /*
+            Instead of: import EmailBuilder from "@usewaypoint/email-builder";
+            Use: import { EmailBuilder } from "@usewaypoint/email-builder";
+            
+            Or check the library documentation for the correct named export.
+            */
+
+            // Mock EmailBuilder class for demonstration
+            class MockEmailBuilder {
+                constructor(options) {
+                    this.element = options.el;
+                    this.components = [];
+                    this.selectedComponent = null;
+                    this.initialize();
+                }
+
+                initialize() {
+                    // TODO: Initialize the actual email builder library
+                    console.log('EmailBuilder initialized');
+                    this.setupEventListeners();
+                }
+
+                setupEventListeners() {
+                    // Component selection
+                    document.addEventListener('click', (e) => {
+                        if (e.target.closest('[data-component-instance]')) {
+                            this.selectComponent(e.target.closest('[data-component-instance]'));
+                        }
+                    });
+
+                    // Drag and drop
+                    document.addEventListener('dragstart', (e) => {
+                        if (e.target.dataset.component) {
+                            e.dataTransfer.setData('text/plain', e.target.dataset.component);
+                        }
+                    });
+
+                    // Tab switching
+                    document.addEventListener('click', (e) => {
+                        if (e.target.dataset.tab) {
+                            this.switchTab(e.target.dataset.tab);
+                        }
+                    });
+
+                    // View switching
+                    document.addEventListener('click', (e) => {
+                        if (e.target.dataset.view) {
+                            this.switchView(e.target.dataset.view);
+                        }
+                    });
+
+                    // Modal handling
+                    document.addEventListener('click', (e) => {
+                        if (e.target.dataset.event === 'click:export') {
+                            this.openExportModal();
+                        }
+                        if (e.target.dataset.event === 'click:closeModal') {
+                            this.closeModal();
+                        }
+                    });
+                }
+
+                selectComponent(element) {
+                    // Remove previous selection
+                    document.querySelectorAll('[data-component-instance]').forEach(el => {
+                        el.classList.remove('ring-2', 'ring-email-primary');
+                    });
+
+                    // Add selection to clicked element
+                    element.classList.add('ring-2', 'ring-email-primary');
+                    
+                    // Show properties panel
+                    document.querySelector('[data-state="no-selection"]').classList.add('hidden');
+                    document.querySelector('[data-state="component-selected"]').classList.remove('hidden');
+
+                    this.selectedComponent = element;
+                }
+
+                switchTab(tab) {
+                    // Update tab buttons
+                    document.querySelectorAll('[data-tab]').forEach(btn => {
+                        btn.classList.remove('text-email-primary', 'border-b-2', 'border-email-primary', 'bg-blue-50');
+                        btn.classList.add('text-gray-500');
+                    });
+                    
+                    document.querySelector(`[data-tab="${tab}"]`).classList.add('text-email-primary', 'border-b-2', 'border-email-primary', 'bg-blue-50');
+                    document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
+
+                    // Switch panels
+                    document.querySelectorAll('[data-panel]').forEach(panel => {
+                        panel.classList.add('hidden');
+                    });
+                    document.querySelector(`[data-panel="${tab}"]`).classList.remove('hidden');
+                }
+
+                switchView(view) {
+                    // Update view buttons
+                    document.querySelectorAll('[data-view]').forEach(btn => {
+                        btn.classList.remove('text-white', 'bg-email-primary');
+                        btn.classList.add('text-gray-600');
+                    });
+                    
+                    document.querySelector(`[data-view="${view}"]`).classList.add('text-white', 'bg-email-primary');
+                    document.querySelector(`[data-view="${view}"]`).classList.remove('text-gray-600');
+
+                    // TODO: Switch editor views (design/preview/code)
+                }
+
+                openExportModal() {
+                    document.querySelector('[data-modal="export"]').classList.remove('hidden');
+                }
+
+                closeModal() {
+                    document.querySelectorAll('[data-modal]').forEach(modal => {
+                        modal.classList.add('hidden');
+                    });
+                }
+
+                getHtml() {
+                    // TODO: Generate HTML from current email structure
+                    return document.querySelector('[data-mock="true"]').outerHTML;
+                }
+
+                save() {
+                    // TODO: Implement save functionality
+                    this.showToast('Template saved successfully!', 'success');
+                }
+
+                showToast(message, type = 'info') {
+                    // TODO: Implement toast notifications
+                    console.log(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+
+            // Initialize the email builder when DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                const editorElement = document.querySelector('[data-implementation="EmailBuilder canvas integration point"]').parentElement;
+                const builder = new MockEmailBuilder({
+                    el: editorElement
+                });
+
+                // Make builder available globally for testing
+                window.emailBuilder = builder;
+            });
+
+            // Component factory for creating new email components
+            const ComponentFactory = {
+                text: () => ({
+                    type: 'text',
+                    content: 'New text block',
+                    fontSize: '16px',
+                    fontWeight: 'normal',
+                    color: '#374151',
+                    textAlign: 'left',
+                    padding: 16,
+                    margin: 8
+                }),
+                
+                image: () => ({
+                    type: 'image',
+                    src: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400',
+                    alt: 'Placeholder image',
+                    width: '100%',
+                    padding: 16,
+                    margin: 8
+                }),
+                
+                button: () => ({
+                    type: 'button',
+                    text: 'Click Here',
+                    href: '#',
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff',
+                    padding: '12px 24px',
+                    borderRadius: '6px'
+                })
+            };
+
+        })();
+    </script>
+</body>
+</html>
