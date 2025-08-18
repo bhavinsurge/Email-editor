@@ -33,6 +33,7 @@ interface StripoCanvasProps {
   onComponentDelete: (componentId: string) => void;
   onComponentDuplicate: (componentId: string) => void;
   onComponentReorder: (dragId: string, hoverId: string, dragIndex: number, hoverIndex: number) => void;
+  onAddComponent: (componentType: string, parentId?: string, index?: number) => void;
   previewDevice: 'desktop' | 'mobile' | 'tablet';
   isFullscreen: boolean;
   collaborators: StripoUser[];
@@ -50,6 +51,7 @@ export function StripoCanvas({
   onComponentDelete,
   onComponentDuplicate,
   onComponentReorder,
+  onAddComponent,
   previewDevice,
   isFullscreen,
   collaborators,
@@ -68,7 +70,7 @@ export function StripoCanvas({
     drop: (item: { type: string }, monitor) => {
       if (!monitor.didDrop()) {
         // Add component to end if not dropped on specific component
-        console.log('Adding component:', item.type);
+        onAddComponent(item.type, undefined, undefined);
       }
     },
     collect: (monitor) => ({

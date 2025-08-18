@@ -268,6 +268,7 @@ export function StripoEditor({
                 onComponentDelete={deleteComponent}
                 onComponentDuplicate={duplicateComponent}
                 onComponentReorder={reorderComponents}
+                onAddComponent={(type, parentId, index) => addComponent(type as any, parentId, index)}
                 previewDevice={previewDevice}
                 isFullscreen={isFullscreen}
                 collaborators={collaborators}

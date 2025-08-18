@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDrag } from 'react-dnd';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -125,19 +126,23 @@ export function StripoSidebar({
     const Icon = component.icon;
     const isSelected = selectedComponentType === component.type;
     
+    const [{ isDragging }, drag] = useDrag({
+      type: 'component',
+      item: { type: component.type },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging()
+      })
+    });
+    
     return (
       <div
+        ref={drag}
         className={`p-3 border-2 border-dashed rounded-lg cursor-pointer transition-all group ${
           isSelected 
             ? 'border-blue-500 bg-blue-50' 
             : 'border-gray-200 hover:border-blue-400 hover:bg-blue-25'
-        }`}
+        } ${isDragging ? 'opacity-50' : ''}`}
         onClick={onClick}
-        draggable
-        onDragStart={(e) => {
-          e.dataTransfer.setData('text/plain', component.type);
-          e.dataTransfer.effectAllowed = 'copy';
-        }}
       >
         <div className="flex items-start space-x-3">
           <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
@@ -158,6 +163,11 @@ export function StripoSidebar({
             </p>
           </div>
         </div>
+        {isDragging && (
+          <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+            <span className="text-blue-700 font-medium text-sm">Dragging...</span>
+          </div>
+        )}
       </div>
     );
   };
