@@ -182,6 +182,37 @@ export function StripoPropertiesPanel({
                         placeholder="Your content here... Use {{variables}} for personalization"
                       />
                     </div>
+                    
+                    {/* Merge Tags for Text */}
+                    <div>
+                      <Label className="text-sm font-medium">Merge Tags</Label>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        {[
+                          { label: 'First Name', tag: '{{first_name}}' },
+                          { label: 'Last Name', tag: '{{last_name}}' },
+                          { label: 'Email', tag: '{{email}}' },
+                          { label: 'Company', tag: '{{company}}' },
+                          { label: 'Custom', tag: '{{custom_field}}' },
+                          { label: 'Date', tag: '{{date}}' }
+                        ].map((item) => (
+                          <Button
+                            key={item.tag}
+                            variant="outline"
+                            size="sm"
+                            className="text-xs justify-start"
+                            onClick={() => {
+                              const currentText = selectedComponent.content?.text || '';
+                              updateComponentContent({ text: currentText + item.tag });
+                            }}
+                          >
+                            {item.label}
+                          </Button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Click to add merge tags to your content. These will be replaced with actual values when the email is sent.
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -286,6 +317,177 @@ export function StripoPropertiesPanel({
                         onChange={(e) => updateComponentContent({ href: e.target.value })}
                         className="mt-2"
                         placeholder="https://example.com"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="target" className="text-sm font-medium">Link Target</Label>
+                      <Select 
+                        value={selectedComponent.content?.target || '_blank'} 
+                        onValueChange={(value) => updateComponentContent({ target: value })}
+                      >
+                        <SelectTrigger className="mt-2">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="_blank">New Window</SelectItem>
+                          <SelectItem value="_self">Same Window</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Social Content */}
+              {selectedComponent.type === 'social' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Social Media Links</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'].map((platform) => (
+                      <div key={platform}>
+                        <Label className="text-sm font-medium capitalize">{platform} URL</Label>
+                        <Input
+                          type="url"
+                          value={selectedComponent.content?.[platform] || ''}
+                          onChange={(e) => updateComponentContent({ [platform]: e.target.value })}
+                          className="mt-2"
+                          placeholder={`https://${platform}.com/yourprofile`}
+                        />
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Spacer Content */}
+              {selectedComponent.type === 'spacer' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Spacer Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label htmlFor="height" className="text-sm font-medium">Height</Label>
+                      <Input
+                        id="height"
+                        type="number"
+                        value={selectedComponent.content?.height || '20'}
+                        onChange={(e) => updateComponentContent({ height: e.target.value })}
+                        className="mt-2"
+                        placeholder="20"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Video Content */}
+              {selectedComponent.type === 'video' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Video Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label htmlFor="videoUrl" className="text-sm font-medium">Video URL</Label>
+                      <Input
+                        id="videoUrl"
+                        type="url"
+                        value={selectedComponent.content?.src || ''}
+                        onChange={(e) => updateComponentContent({ src: e.target.value })}
+                        className="mt-2"
+                        placeholder="https://youtube.com/watch?v=..."
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="poster" className="text-sm font-medium">Poster Image</Label>
+                      <Input
+                        id="poster"
+                        type="url"
+                        value={selectedComponent.content?.poster || ''}
+                        onChange={(e) => updateComponentContent({ poster: e.target.value })}
+                        className="mt-2"
+                        placeholder="https://example.com/poster.jpg"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">Autoplay</Label>
+                      <input
+                        type="checkbox"
+                        checked={selectedComponent.content?.autoplay || false}
+                        onChange={(e) => updateComponentContent({ autoplay: e.target.checked })}
+                        className="rounded"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Timer/Countdown Content */}
+              {selectedComponent.type === 'timer' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Countdown Timer</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label htmlFor="endDate" className="text-sm font-medium">End Date & Time</Label>
+                      <Input
+                        id="endDate"
+                        type="datetime-local"
+                        value={selectedComponent.content?.endDate || ''}
+                        onChange={(e) => updateComponentContent({ endDate: e.target.value })}
+                        className="mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="expiredText" className="text-sm font-medium">Expired Message</Label>
+                      <Input
+                        id="expiredText"
+                        value={selectedComponent.content?.expiredText || 'Offer has expired'}
+                        onChange={(e) => updateComponentContent({ expiredText: e.target.value })}
+                        className="mt-2"
+                        placeholder="Offer has expired"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Columns Layout Content */}
+              {selectedComponent.type === 'columns' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Column Layout</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label htmlFor="columnCount" className="text-sm font-medium">Number of Columns</Label>
+                      <Select 
+                        value={selectedComponent.content?.columns?.toString() || '2'} 
+                        onValueChange={(value) => updateComponentContent({ columns: parseInt(value) })}
+                      >
+                        <SelectTrigger className="mt-2">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 Column</SelectItem>
+                          <SelectItem value="2">2 Columns</SelectItem>
+                          <SelectItem value="3">3 Columns</SelectItem>
+                          <SelectItem value="4">4 Columns</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="gap" className="text-sm font-medium">Column Gap</Label>
+                      <Input
+                        id="gap"
+                        value={selectedComponent.content?.gap || '16px'}
+                        onChange={(e) => updateComponentContent({ gap: e.target.value })}
+                        className="mt-2"
+                        placeholder="16px"
                       />
                     </div>
                   </CardContent>

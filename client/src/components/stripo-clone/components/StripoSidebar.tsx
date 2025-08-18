@@ -117,14 +117,11 @@ export function StripoSidebar({
   const [activeTab, setActiveTab] = useState('components');
 
   const ComponentButton = ({ 
-    component, 
-    onClick 
+    component 
   }: { 
     component: { type: StripoComponentType; label: string; icon: any; description: string }; 
-    onClick: () => void;
   }) => {
     const Icon = component.icon;
-    const isSelected = selectedComponentType === component.type;
     
     const [{ isDragging }, drag] = useDrag({
       type: 'component',
@@ -137,25 +134,13 @@ export function StripoSidebar({
     return (
       <div
         ref={drag}
-        className={`p-3 border-2 border-dashed rounded-lg cursor-pointer transition-all group ${
-          isSelected 
-            ? 'border-blue-500 bg-blue-50' 
-            : 'border-gray-200 hover:border-blue-400 hover:bg-blue-25'
-        } ${isDragging ? 'opacity-50' : ''}`}
-        onClick={onClick}
+        className={`p-3 border-2 border-dashed rounded-lg cursor-grab transition-all group border-gray-200 hover:border-blue-400 hover:bg-blue-25 ${isDragging ? 'opacity-50 cursor-grabbing' : ''}`}
+        title={`Drag to add ${component.label}`}
       >
         <div className="flex items-start space-x-3">
-          <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
-            isSelected 
-              ? 'text-blue-600' 
-              : 'text-gray-400 group-hover:text-blue-500'
-          }`} />
+          <Icon className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400 group-hover:text-blue-500" />
           <div className="flex-1 min-w-0">
-            <p className={`text-sm font-medium ${
-              isSelected 
-                ? 'text-blue-700' 
-                : 'text-gray-900 group-hover:text-blue-700'
-            }`}>
+            <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">
               {component.label}
             </p>
             <p className="text-xs text-gray-500 mt-1 leading-tight">
@@ -229,7 +214,6 @@ export function StripoSidebar({
                     <ComponentButton
                       key={component.type}
                       component={component}
-                      onClick={() => onAddComponent(component.type)}
                     />
                   ))}
                 </AccordionContent>
@@ -248,7 +232,6 @@ export function StripoSidebar({
                     <ComponentButton
                       key={component.type}
                       component={component}
-                      onClick={() => onAddComponent(component.type)}
                     />
                   ))}
                 </AccordionContent>
@@ -267,7 +250,6 @@ export function StripoSidebar({
                     <ComponentButton
                       key={component.type}
                       component={component}
-                      onClick={() => onAddComponent(component.type)}
                     />
                   ))}
                 </AccordionContent>
@@ -286,7 +268,6 @@ export function StripoSidebar({
                     <ComponentButton
                       key={component.type}
                       component={component}
-                      onClick={() => onAddComponent(component.type)}
                     />
                   ))}
                 </AccordionContent>
@@ -307,7 +288,6 @@ export function StripoSidebar({
                       <ComponentButton
                         key={component.type}
                         component={component}
-                        onClick={() => onAddComponent(component.type)}
                       />
                     ))}
                   </AccordionContent>
@@ -329,7 +309,6 @@ export function StripoSidebar({
                       <ComponentButton
                         key={component.type}
                         component={component}
-                        onClick={() => onAddComponent(component.type)}
                       />
                     ))}
                   </AccordionContent>
