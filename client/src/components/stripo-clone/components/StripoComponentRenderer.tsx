@@ -423,103 +423,88 @@ export function StripoComponentRenderer({
               <p className="font-semibold mb-2">Question 1 of 5</p>
               <p className="mb-3">What is the capital of France?</p>
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" size="sm">London</Button>
-                <Button variant="outline" size="sm">Paris</Button>
-                <Button variant="outline" size="sm">Berlin</Button>
-                <Button variant="outline" size="sm">Madrid</Button>
+                <button className="p-2 bg-blue-100 hover:bg-blue-200 rounded">Paris</button>
+                <button className="p-2 bg-blue-100 hover:bg-blue-200 rounded">London</button>
+                <button className="p-2 bg-blue-100 hover:bg-blue-200 rounded">Madrid</button>
+                <button className="p-2 bg-blue-100 hover:bg-blue-200 rounded">Berlin</button>
               </div>
             </div>
-            <Button className="bg-white text-purple-600 hover:bg-gray-100">
-              Start Quiz
-            </Button>
+            <Button>Start Quiz</Button>
           </div>
         </div>
       );
 
-    case 'amp-carousel':
+    case 'amp_carousel':
       return (
         <div style={styles}>
           <div className="relative bg-gray-100 rounded-lg overflow-hidden">
-            <div className="aspect-video flex items-center justify-center">
-              <div className="text-center text-gray-600">
-                <div className="flex items-center justify-center space-x-2 mb-2">
-                  <SkipBack className="w-6 h-6" />
-                  <Play className="w-8 h-8" />
-                  <SkipForward className="w-6 h-6" />
+            <div className="flex">
+              <div className="w-full h-48 bg-gradient-to-r from-blue-400 to-purple-600 flex items-center justify-center text-white">
+                <div className="text-center">
+                  <h3 className="text-xl font-bold">Slide 1</h3>
+                  <p>Interactive AMP Carousel</p>
                 </div>
-                <p className="text-sm font-medium">AMP Carousel</p>
-                <p className="text-xs">Interactive image slideshow</p>
               </div>
             </div>
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className={`w-2 h-2 rounded-full ${i === 1 ? 'bg-blue-500' : 'bg-gray-400'}`} />
-              ))}
+            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              <div className="w-2 h-2 bg-white rounded-full opacity-50"></div>
+              <div className="w-2 h-2 bg-white rounded-full"></div>
+              <div className="w-2 h-2 bg-white rounded-full opacity-50"></div>
             </div>
           </div>
         </div>
       );
 
-    case 'amp-accordion':
-      return (
-        <div style={styles}>
-          <div className="space-y-2">
-            {['Section 1', 'Section 2', 'Section 3'].map((section, index) => (
-              <div key={section} className="border border-gray-200 rounded">
-                <div className="p-3 bg-gray-50 font-medium text-sm flex justify-between items-center">
-                  {section}
-                  <span className="text-gray-400">▼</span>
-                </div>
-                {index === 0 && (
-                  <div className="p-3 text-sm text-gray-600">
-                    This is the expanded content for {section}.
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'amp-form':
+    case 'amp_form':
       return (
         <div style={styles}>
           <div className="p-4 border border-gray-200 rounded-lg bg-white">
             <h3 className="font-semibold mb-3">AMP Interactive Form</h3>
             <div className="space-y-3">
-              <Input placeholder="Name" />
-              <Input type="email" placeholder="Email" />
-              <select className="w-full p-2 border border-gray-300 rounded">
-                <option>Choose an option</option>
+              <Input placeholder="Real-time validation" />
+              <select className="w-full p-2 border border-gray-300 rounded-md">
+                <option>Select an option</option>
                 <option>Option 1</option>
                 <option>Option 2</option>
               </select>
-              <Button className="w-full">Submit (AMP)</Button>
+              <Button className="w-full">Submit with AMP</Button>
             </div>
           </div>
         </div>
       );
 
-    case 'amp-list':
+    case 'countdown':
       return (
         <div style={styles}>
-          <div className="space-y-2">
-            <h3 className="font-semibold">Dynamic Content List</h3>
-            <div className="text-sm text-gray-600 mb-3">Updates automatically from data source</div>
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="p-3 bg-gray-50 rounded flex justify-between items-center">
-                <span>Dynamic Item {item}</span>
-                <Button size="sm" variant="outline">View</Button>
+          <div className="text-center p-6 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg">
+            <h3 className="text-xl font-bold mb-4">Flash Sale Ends In:</h3>
+            <div className="grid grid-cols-4 gap-4 max-w-xs mx-auto">
+              <div className="text-center">
+                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">05</div>
+                <div className="text-xs mt-1">DAYS</div>
               </div>
-            ))}
+              <div className="text-center">
+                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">14</div>
+                <div className="text-xs mt-1">HOURS</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">32</div>
+                <div className="text-xs mt-1">MIN</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">28</div>
+                <div className="text-xs mt-1">SEC</div>
+              </div>
+            </div>
           </div>
         </div>
       );
 
     default:
       return (
-        <div style={styles} className="p-4 border border-dashed border-gray-300 text-center text-gray-500">
+        <div style={styles} className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
           <p>Unknown component type: {component.type}</p>
+          <p className="text-xs mt-1">Component ID: {component.id}</p>
         </div>
       );
   }

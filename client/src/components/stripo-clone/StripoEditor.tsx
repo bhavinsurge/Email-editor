@@ -182,8 +182,7 @@ export function StripoEditor({
     if (collaborationEnabled) {
       broadcastChange({
         type: 'component_update',
-        componentId,
-        updates,
+        data: { updates, componentId },
         userId: user?.id || 'anonymous'
       });
     }

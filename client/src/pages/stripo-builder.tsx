@@ -383,7 +383,7 @@ export default function StripoBuilderPage() {
       <StripoEditor
         initialTemplate={initialTemplate}
         user={currentUser}
-        onTemplateChange={handleTemplateChange}
+
         onSave={handleSave}
         onExport={handleExport}
         collaborationEnabled={true}

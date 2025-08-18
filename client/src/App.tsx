@@ -6,12 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import EmailBuilderPage from "@/pages/email-builder";
 import CustomEmailBuilderPage from "@/pages/custom-email-builder";
-import SimpleBuilderPage from "./pages/simple - builder";
+import SimpleBuilderPage from "./pages/simple-builder";
+import StripoBuilderPage from "@/pages/stripo-builder";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={SimpleBuilderPage} />
+      <Route path="/" component={StripoBuilderPage} />
+      <Route path="/stripo-builder" component={StripoBuilderPage} />
       <Route path="/email-builder" component={EmailBuilderPage} />
       <Route path="/custom-email-builder" component={CustomEmailBuilderPage} />
       <Route path="/simple-builder" component={SimpleBuilderPage} />

@@ -519,7 +519,6 @@ function createStripoComponent(type: StripoComponent['type'], globalStyles: Stri
           fontWeight: '500',
           textAlign: 'center',
           border: 'none',
-          cursor: 'pointer',
           margin: globalStyles.spacing.sm
         }
       };
