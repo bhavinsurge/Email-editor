@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import {
   Accordion,
   AccordionContent,
@@ -21,7 +20,6 @@ import {
   GripHorizontal,
   Columns,
   AlignLeft,
-  Plus,
   Video,
   Code,
   Timer,
@@ -30,24 +28,15 @@ import {
   Mail,
   User,
   Star,
-  Gift,
-  Calendar,
   ShoppingCart,
-  Zap,
-  Play,
-  FileText,
-  Palette,
   Search,
-  Filter
+  Tag
 } from 'lucide-react';
 import { StripoComponentType } from '../types/stripo.types';
 
 interface StripoSidebarProps {
   onAddComponent: (type: StripoComponentType) => void;
   selectedComponentType?: StripoComponentType;
-  gameGeneratorEnabled?: boolean;
-  customFontsEnabled?: boolean;
-  ampSupport?: boolean;
 }
 
 const basicComponents = [
@@ -79,39 +68,52 @@ const advancedComponents = [
   { type: 'gallery' as const, label: 'Gallery', icon: Grid3X3, description: 'Image galleries' }
 ];
 
-const ampComponents = [
-  { type: 'amp-carousel' as const, label: 'AMP Carousel', icon: Play, description: 'Interactive image carousel' },
-  { type: 'amp-accordion' as const, label: 'AMP Accordion', icon: AlignLeft, description: 'Collapsible content' },
-  { type: 'amp-form' as const, label: 'AMP Form', icon: FileText, description: 'Interactive forms' },
-  { type: 'amp-list' as const, label: 'AMP List', icon: AlignLeft, description: 'Dynamic content lists' }
+const formComponents = [
+  { type: 'form' as const, label: 'Contact Form', icon: Mail, description: 'Lead capture forms' },
+  { type: 'survey' as const, label: 'Survey', icon: User, description: 'Customer surveys' }
 ];
 
-const gameComponents = [
-  { type: 'game' as const, label: 'Quiz Game', icon: Play, description: 'Interactive quiz' },
-  { type: 'survey' as const, label: 'Survey', icon: FileText, description: 'Customer surveys' },
-  { type: 'form' as const, label: 'Contact Form', icon: Mail, description: 'Lead capture forms' }
-];
-
-const savedModules = [
-  { id: '1', name: 'Company Header', type: 'header', thumbnail: '🏢' },
-  { id: '2', name: 'Newsletter Footer', type: 'footer', thumbnail: '📰' },
-  { id: '3', name: 'Product Grid', type: 'product', thumbnail: '🛍️' },
-  { id: '4', name: 'Social Links', type: 'social', thumbnail: '🔗' }
-];
-
-const quickTemplates = [
-  { id: 'welcome', name: 'Welcome Email', components: ['header', 'text', 'button', 'footer'] },
-  { id: 'newsletter', name: 'Newsletter', components: ['header', 'image', 'text', 'columns', 'footer'] },
-  { id: 'promotion', name: 'Promotional', components: ['header', 'timer', 'product', 'button', 'footer'] },
-  { id: 'transactional', name: 'Receipt', components: ['header', 'text', 'product', 'text', 'footer'] }
-];
+// Comprehensive merge tags from the provided file
+const mergeTags = {
+  user: [
+    '{{userId}}', '{{firstName}}', '{{lastName}}', '{{fullName}}', '{{email}}', '{{phone}}',
+    '{{gender}}', '{{dob}}', '{{age}}', '{{language}}', '{{timezone}}', '{{profileImage}}',
+    '{{middleName}}', '{{nickname}}', '{{title}}'
+  ],
+  address: [
+    '{{address}}', '{{addressLine1}}', '{{addressLine2}}', '{{city}}', '{{state}}',
+    '{{postalCode}}', '{{country}}', '{{region}}', '{{county}}'
+  ],
+  company: [
+    '{{companyId}}', '{{companyName}}', '{{department}}', '{{jobTitle}}', '{{role}}',
+    '{{industry}}', '{{companySize}}', '{{website}}', '{{companyPhone}}', '{{companyEmail}}'
+  ],
+  account: [
+    '{{username}}', '{{signupDate}}', '{{lastLogin}}', '{{accountStatus}}', '{{membershipLevel}}',
+    '{{subscriptionPlan}}', '{{subscriptionStart}}', '{{subscriptionEnd}}', '{{passwordResetLink}}',
+    '{{verificationLink}}', '{{twoFactorEnabled}}'
+  ],
+  orders: [
+    '{{orderId}}', '{{orderDate}}', '{{orderStatus}}', '{{orderTotal}}', '{{currency}}',
+    '{{paymentMethod}}', '{{transactionId}}', '{{invoiceId}}', '{{discountCode}}',
+    '{{shippingMethod}}', '{{trackingNumber}}', '{{deliveryDate}}'
+  ],
+  products: [
+    '{{productId}}', '{{productName}}', '{{productDescription}}', '{{productCategory}}',
+    '{{productPrice}}', '{{productQuantity}}', '{{sku}}', '{{brand}}', '{{color}}',
+    '{{size}}', '{{weight}}', '{{stockStatus}}'
+  ],
+  campaign: [
+    '{{campaignId}}', '{{campaignName}}', '{{campaignType}}', '{{campaignStatus}}',
+    '{{currentDate}}', '{{currentTime}}', '{{unsubscribeLink}}', '{{preferencesLink}}',
+    '{{supportEmail}}', '{{companyWebsite}}', '{{systemName}}', '{{systemUrl}}',
+    '{{appName}}', '{{appVersion}}', '{{customField}}'
+  ]
+};
 
 export function StripoSidebar({ 
   onAddComponent, 
-  selectedComponentType,
-  gameGeneratorEnabled = true,
-  customFontsEnabled = true,
-  ampSupport = true 
+  selectedComponentType
 }: StripoSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('components');
@@ -134,8 +136,9 @@ export function StripoSidebar({
     return (
       <div
         ref={drag}
-        className={`p-3 border-2 border-dashed rounded-lg cursor-grab transition-all group border-gray-200 hover:border-blue-400 hover:bg-blue-25 ${isDragging ? 'opacity-50 cursor-grabbing' : ''}`}
+        className={`p-3 border-2 border-dashed rounded-lg cursor-grab transition-all group border-gray-200 hover:border-blue-400 hover:bg-blue-50 ${isDragging ? 'opacity-50 cursor-grabbing' : ''}`}
         title={`Drag to add ${component.label}`}
+        data-testid={`component-${component.type}`}
       >
         <div className="flex items-start space-x-3">
           <Icon className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400 group-hover:text-blue-500" />
@@ -148,12 +151,25 @@ export function StripoSidebar({
             </p>
           </div>
         </div>
-        {isDragging && (
-          <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
-            <span className="text-blue-700 font-medium text-sm">Dragging...</span>
-          </div>
-        )}
       </div>
+    );
+  };
+
+  const MergeTagButton = ({ tag }: { tag: string }) => {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-auto p-2 text-xs font-mono justify-start bg-gray-50 hover:bg-blue-50 border-gray-200 hover:border-blue-300"
+        onClick={() => {
+          // Copy to clipboard
+          navigator.clipboard.writeText(tag);
+        }}
+        data-testid={`merge-tag-${tag.replace(/[{}]/g, '')}`}
+      >
+        <Tag className="w-3 h-3 mr-1" />
+        {tag}
+      </Button>
     );
   };
 
@@ -166,15 +182,20 @@ export function StripoSidebar({
     );
   };
 
+  const filteredMergeTags = (tags: string[]) => {
+    if (!searchQuery.trim()) return tags;
+    const query = searchQuery.toLowerCase();
+    return tags.filter(tag => 
+      tag.toLowerCase().includes(query)
+    );
+  };
+
   return (
-    <div className="w-80 bg-white border-r border-gray-200 overflow-y-auto flex flex-col">
+    <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-gray-900">Components</h2>
-          <Button variant="ghost" size="sm" className="p-1">
-            <Filter className="w-4 h-4" />
-          </Button>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Components</h2>
         </div>
         
         {/* Search */}
@@ -185,6 +206,7 @@ export function StripoSidebar({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
+            data-testid="input-search-components"
           />
         </div>
       </div>
@@ -192,10 +214,9 @@ export function StripoSidebar({
       {/* Content */}
       <div className="flex-1">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          <TabsList className="grid grid-cols-3 mx-4 mt-4">
-            <TabsTrigger value="components" className="text-xs">Components</TabsTrigger>
-            <TabsTrigger value="modules" className="text-xs">Modules</TabsTrigger>
-            <TabsTrigger value="templates" className="text-xs">Templates</TabsTrigger>
+          <TabsList className="grid grid-cols-2 mx-4 mt-4">
+            <TabsTrigger value="components" className="text-xs" data-testid="tab-components">Components</TabsTrigger>
+            <TabsTrigger value="merge-tags" className="text-xs" data-testid="tab-merge-tags">Merge Tags</TabsTrigger>
           </TabsList>
 
           {/* Components Tab */}
@@ -273,137 +294,134 @@ export function StripoSidebar({
                 </AccordionContent>
               </AccordionItem>
 
-              {/* AMP Components */}
-              {ampSupport && (
-                <AccordionItem value="amp">
-                  <AccordionTrigger className="text-sm font-medium">
-                    AMP Interactive
-                    <Badge variant="outline" className="ml-2 text-xs border-green-200 text-green-700">
-                      <Zap className="w-3 h-3 mr-1" />
-                      AMP
-                    </Badge>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-2">
-                    {filteredComponents(ampComponents).map((component) => (
-                      <ComponentButton
-                        key={component.type}
-                        component={component}
-                      />
-                    ))}
-                  </AccordionContent>
-                </AccordionItem>
-              )}
-
-              {/* Game Components */}
-              {gameGeneratorEnabled && (
-                <AccordionItem value="games">
-                  <AccordionTrigger className="text-sm font-medium">
-                    Interactive Games
-                    <Badge variant="outline" className="ml-2 text-xs border-purple-200 text-purple-700">
-                      <Play className="w-3 h-3 mr-1" />
-                      Games
-                    </Badge>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-2">
-                    {filteredComponents(gameComponents).map((component) => (
-                      <ComponentButton
-                        key={component.type}
-                        component={component}
-                      />
-                    ))}
-                  </AccordionContent>
-                </AccordionItem>
-              )}
+              {/* Form Components */}
+              <AccordionItem value="forms">
+                <AccordionTrigger className="text-sm font-medium">
+                  Forms & Surveys
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredComponents(formComponents).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-2">
+                  {filteredComponents(formComponents).map((component) => (
+                    <ComponentButton
+                      key={component.type}
+                      component={component}
+                    />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
           </TabsContent>
 
-          {/* Saved Modules Tab */}
-          <TabsContent value="modules" className="flex-1 p-4 space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-700">Saved Modules</h3>
-                <Button variant="outline" size="sm" className="text-xs">
-                  <Plus className="w-3 h-3 mr-1" />
-                  Save Current
-                </Button>
-              </div>
+          {/* Merge Tags Tab */}
+          <TabsContent value="merge-tags" className="flex-1 p-4 space-y-4">
+            <Accordion type="multiple" defaultValue={["user", "company"]} className="space-y-2">
+              {/* User/Customer Tags */}
+              <AccordionItem value="user">
+                <AccordionTrigger className="text-sm font-medium">
+                  👤 User / Customer
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.user).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.user).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
 
-              {savedModules.map((module) => (
-                <Card key={module.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                  <CardContent className="p-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{module.thumbnail}</div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">{module.name}</p>
-                        <p className="text-xs text-gray-500 capitalize">{module.type} module</p>
-                      </div>
-                      <Button variant="ghost" size="sm" className="p-1">
-                        <Plus className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {/* Address Tags */}
+              <AccordionItem value="address">
+                <AccordionTrigger className="text-sm font-medium">
+                  🏠 Address
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.address).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.address).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
 
-              <Separator className="my-4" />
+              {/* Company Tags */}
+              <AccordionItem value="company">
+                <AccordionTrigger className="text-sm font-medium">
+                  🏢 Company / Organization
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.company).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.company).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
 
-              <div>
-                <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                  Synchronized Modules
-                </h4>
-                <p className="text-xs text-gray-500 mb-3">
-                  Edit once, update everywhere automatically
-                </p>
-                <Button variant="outline" size="sm" className="w-full text-xs">
-                  <Palette className="w-3 h-3 mr-1" />
-                  Create Sync Module
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
+              {/* Account Tags */}
+              <AccordionItem value="account">
+                <AccordionTrigger className="text-sm font-medium">
+                  🔐 Account
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.account).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.account).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
 
-          {/* Quick Templates Tab */}
-          <TabsContent value="templates" className="flex-1 p-4 space-y-4">
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-gray-700">Quick Start Templates</h3>
-              
-              {quickTemplates.map((template) => (
-                <Card key={template.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">{template.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {template.components.length} components
-                        </p>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-xs"
-                        onClick={() => {
-                          // Add all components in sequence
-                          template.components.forEach((componentType, index) => {
-                            setTimeout(() => {
-                              onAddComponent(componentType as StripoComponentType);
-                            }, index * 100);
-                          });
-                        }}
-                      >
-                        Use Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {/* Orders Tags */}
+              <AccordionItem value="orders">
+                <AccordionTrigger className="text-sm font-medium">
+                  🛒 Orders
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.orders).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.orders).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
 
-              <Separator className="my-4" />
+              {/* Products Tags */}
+              <AccordionItem value="products">
+                <AccordionTrigger className="text-sm font-medium">
+                  📦 Products
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.products).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.products).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
 
-              <Button variant="outline" className="w-full" onClick={() => {}}>
-                <FileText className="w-4 h-4 mr-2" />
-                Browse All Templates
-              </Button>
-            </div>
+              {/* Campaign/System Tags */}
+              <AccordionItem value="campaign">
+                <AccordionTrigger className="text-sm font-medium">
+                  🎯 Campaign / System
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.campaign).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.campaign).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </TabsContent>
         </Tabs>
       </div>
