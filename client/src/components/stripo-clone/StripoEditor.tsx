@@ -4,7 +4,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { StripoToolbar } from './components/StripoToolbar';
 import { StripoSidebar } from './components/StripoSidebar';
 import { StripoCanvas } from './components/StripoCanvas';
-import { StripoPropertiesPanel } from './components/StripoPropertiesPanel';
+import { EnhancedPropertiesPanel } from './components/EnhancedPropertiesPanel';
 import { StripoTemplateLibrary } from './components/StripoTemplateLibrary';
 import { StripoPreviewModal } from './components/StripoPreviewModal';
 import { StripoExportModal } from './components/StripoExportModal';
@@ -306,7 +306,7 @@ export function StripoEditor({
 
           {/* Right Properties Panel */}
           {currentView === 'editor' && (
-            <StripoPropertiesPanel
+            <EnhancedPropertiesPanel
               selectedComponent={selectedComponent}
               template={template}
               onComponentUpdate={handleComponentUpdate}

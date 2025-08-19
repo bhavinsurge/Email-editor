@@ -77,10 +77,28 @@ export function StripoComponentRenderer({
     });
   };
 
+  // Convert styles to React CSSProperties
+  const getReactStyles = (): React.CSSProperties => {
+    const reactStyles: React.CSSProperties = {};
+    
+    Object.keys(styles).forEach(key => {
+      const value = (styles as any)[key];
+      if (value !== undefined) {
+        // Handle camelCase conversion for React styles
+        const camelKey = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+        (reactStyles as any)[camelKey] = value;
+      }
+    });
+    
+    return reactStyles;
+  };
+
+  const reactStyles = getReactStyles();
+
   switch (component.type) {
     case 'container':
       return (
-        <div style={styles} className="w-full">
+        <div style={reactStyles} className="w-full">
           {component.children?.map((child, index) => (
             <StripoComponentRenderer
               key={child.id}
@@ -96,7 +114,7 @@ export function StripoComponentRenderer({
 
     case 'row':
       return (
-        <div style={{ ...styles, display: 'flex' }} className="w-full">
+        <div style={{ ...reactStyles, display: 'flex' }} className="w-full">
           {component.children?.map((child, index) => (
             <StripoComponentRenderer
               key={child.id}
@@ -112,7 +130,7 @@ export function StripoComponentRenderer({
 
     case 'column':
       return (
-        <div style={styles} className="flex-1">
+        <div style={reactStyles} className="flex-1">
           {component.children?.map((child, index) => (
             <StripoComponentRenderer
               key={child.id}
@@ -136,7 +154,7 @@ export function StripoComponentRenderer({
             onChange={(e) => setEditingValue(e.target.value)}
             onBlur={() => handleEditSubmit('text')}
             onKeyDown={(e) => handleKeyPress(e, 'text')}
-            style={styles}
+            style={reactStyles}
             autoFocus
           />
         );
@@ -144,7 +162,7 @@ export function StripoComponentRenderer({
 
       return (
         <div
-          style={styles}
+          style={reactStyles}
           onDoubleClick={() => handleDoubleClick('text', textContent)}
           dangerouslySetInnerHTML={{ __html: processMergeTags(textContent) }}
         />
@@ -154,7 +172,7 @@ export function StripoComponentRenderer({
       const headingText = component.content?.text || component.content?.title || 'Your Heading';
       
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <h1
             style={{ margin: 0, fontSize: 'inherit', fontWeight: 'inherit' }}
             onDoubleClick={() => handleDoubleClick('text', headingText)}
@@ -171,7 +189,7 @@ export function StripoComponentRenderer({
 
     case 'image':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <img
             src={component.content?.src || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&h=300&fit=crop'}
             alt={component.content?.alt || 'Image'}
@@ -188,11 +206,11 @@ export function StripoComponentRenderer({
       const buttonHref = component.content?.href || '#';
 
       return (
-        <div style={{ textAlign: styles.textAlign as any, padding: styles.padding }}>
+        <div style={{ textAlign: reactStyles.textAlign as any, padding: reactStyles.padding }}>
           <a
             href={buttonHref}
             style={{
-              ...styles,
+              ...reactStyles,
               display: 'inline-block',
               textDecoration: 'none',
               cursor: 'pointer'
@@ -208,21 +226,21 @@ export function StripoComponentRenderer({
       return (
         <hr
           style={{
-            ...styles,
+            ...reactStyles,
             border: 'none',
-            margin: styles.margin || '16px 0'
+            margin: reactStyles.margin || '16px 0'
           }}
         />
       );
 
     case 'spacer':
-      return <div style={styles} />;
+      return <div style={reactStyles} />;
 
     case 'social':
       const socialItems = component.content?.items || [];
       
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="flex gap-2 justify-center">
             {socialItems.map((item) => (
               <a
@@ -242,7 +260,7 @@ export function StripoComponentRenderer({
 
     case 'video':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="relative bg-gray-900 rounded-lg overflow-hidden">
             <div className="aspect-video flex items-center justify-center">
               <div className="text-center text-white">
@@ -258,14 +276,15 @@ export function StripoComponentRenderer({
     case 'html':
       return (
         <div
-          style={styles}
+          style={reactStyles}
           dangerouslySetInnerHTML={{ __html: component.content?.html || '<p>Custom HTML content</p>' }}
         />
       );
 
     case 'timer':
+    case 'countdown':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="text-center">
             <h3 className="text-lg font-semibold mb-2">
               {component.content?.title || 'Limited Time Offer'}
@@ -297,7 +316,7 @@ export function StripoComponentRenderer({
 
     case 'product':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="border border-gray-200 rounded-lg p-4 bg-white">
             <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
               <ShoppingCart className="w-8 h-8 text-gray-400" />
@@ -314,7 +333,7 @@ export function StripoComponentRenderer({
 
     case 'testimonial':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="text-center p-6 bg-gray-50 rounded-lg">
             <div className="flex justify-center mb-3">
               {[...Array(5)].map((_, i) => (
@@ -339,7 +358,7 @@ export function StripoComponentRenderer({
 
     case 'pricing':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="border border-gray-200 rounded-lg p-6 bg-white text-center">
             <h3 className="text-xl font-bold mb-2">Premium Plan</h3>
             <div className="text-3xl font-bold text-blue-600 mb-4">
@@ -366,7 +385,7 @@ export function StripoComponentRenderer({
 
     case 'gallery':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="grid grid-cols-2 gap-2">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
@@ -379,7 +398,7 @@ export function StripoComponentRenderer({
 
     case 'form':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="space-y-4">
             <Input placeholder="Your Name" />
             <Input type="email" placeholder="Your Email" />
@@ -396,7 +415,7 @@ export function StripoComponentRenderer({
 
     case 'survey':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="p-4 border border-gray-200 rounded-lg bg-white">
             <h3 className="font-semibold mb-3">Quick Survey</h3>
             <p className="text-sm text-gray-600 mb-4">How satisfied are you with our service?</p>
@@ -415,7 +434,7 @@ export function StripoComponentRenderer({
 
     case 'game':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-center">
             <h3 className="text-xl font-bold mb-2">Interactive Quiz</h3>
             <p className="mb-4">Test your knowledge and win prizes!</p>
@@ -434,9 +453,9 @@ export function StripoComponentRenderer({
         </div>
       );
 
-    case 'amp_carousel':
+    case 'amp-carousel':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="relative bg-gray-100 rounded-lg overflow-hidden">
             <div className="flex">
               <div className="w-full h-48 bg-gradient-to-r from-blue-400 to-purple-600 flex items-center justify-center text-white">
@@ -455,9 +474,9 @@ export function StripoComponentRenderer({
         </div>
       );
 
-    case 'amp_form':
+    case 'amp-form':
       return (
-        <div style={styles}>
+        <div style={reactStyles}>
           <div className="p-4 border border-gray-200 rounded-lg bg-white">
             <h3 className="font-semibold mb-3">AMP Interactive Form</h3>
             <div className="space-y-3">
@@ -473,36 +492,9 @@ export function StripoComponentRenderer({
         </div>
       );
 
-    case 'countdown':
-      return (
-        <div style={styles}>
-          <div className="text-center p-6 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg">
-            <h3 className="text-xl font-bold mb-4">Flash Sale Ends In:</h3>
-            <div className="grid grid-cols-4 gap-4 max-w-xs mx-auto">
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">05</div>
-                <div className="text-xs mt-1">DAYS</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">14</div>
-                <div className="text-xs mt-1">HOURS</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">32</div>
-                <div className="text-xs mt-1">MIN</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-black bg-opacity-20 rounded p-2">28</div>
-                <div className="text-xs mt-1">SEC</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-
     default:
       return (
-        <div style={styles} className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
+        <div style={reactStyles} className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
           <p>Unknown component type: {component.type}</p>
           <p className="text-xs mt-1">Component ID: {component.id}</p>
         </div>
