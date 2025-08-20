@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -60,20 +60,22 @@ function DropZone({ index, onDrop, isVisible }: DropZoneProps) {
     })
   });
 
+  if (!isVisible && !isOver) return null;
+
   return (
     <div
       ref={drop}
-      className={`transition-all duration-200 ${
-        isVisible || isOver 
-          ? 'h-12 border-2 border-dashed border-blue-400 bg-blue-50 rounded-lg mb-4 flex items-center justify-center' 
-          : 'h-2'
+      className={`transition-all duration-200 my-1 ${
+        isOver
+          ? 'h-8 border-2 border-solid border-green-500 bg-green-50 dark:bg-green-900/20 rounded-md flex items-center justify-center' 
+          : 'h-4 border-2 border-dashed border-blue-300 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-600 rounded-md'
       }`}
       data-testid={`drop-zone-${index}`}
     >
-      {(isVisible || isOver) && (
-        <div className="flex items-center space-x-2 text-blue-600 text-sm">
+      {isOver && (
+        <div className="flex items-center space-x-2 text-sm text-green-700 dark:text-green-300 font-medium">
           <Plus className="w-4 h-4" />
-          <span>{isOver ? 'Drop component here' : 'Drop zone'}</span>
+          <span>Drop here</span>
         </div>
       )}
     </div>
@@ -99,6 +101,7 @@ export function StripoCanvas({
 }: StripoCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [showDropZones, setShowDropZones] = useState(false);
+  const [draggedComponent, setDraggedComponent] = useState<string | null>(null);
 
   // Drop zone for canvas background
   const [{ isOver }, drop] = useDrop({
@@ -112,10 +115,33 @@ export function StripoCanvas({
     collect: (monitor) => ({
       isOver: monitor.isOver({ shallow: true })
     }),
-    hover: () => {
-      setShowDropZones(true);
+    hover: (item) => {
+      if (item) {
+        setShowDropZones(true);
+        setDraggedComponent(item.type);
+      }
     }
   });
+
+  useEffect(() => {
+    const handleDragStart = (e: DragEvent) => {
+      if (e.dataTransfer && e.dataTransfer.getData('application/json')) {
+        const data = JSON.parse(e.dataTransfer.getData('application/json'));
+        setDraggedComponent(data.type);
+      }
+    };
+    
+    const handleDragEnd = () => {
+      setDraggedComponent(null);
+    };
+
+    document.addEventListener('dragstart', handleDragStart);
+    document.addEventListener('dragend', handleDragEnd);
+    return () => {
+      document.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('dragend', handleDragEnd);
+    };
+  }, []);
 
   const getCanvasStyles = () => {
     const baseStyles = {
@@ -143,11 +169,13 @@ export function StripoCanvas({
   const handleCanvasClick = useCallback(() => {
     onComponentSelect(null);
     setShowDropZones(false);
+    setDraggedComponent(null);
   }, [onComponentSelect]);
 
   const handleDropComponent = useCallback((type: string, index: number) => {
     onAddComponent(type, undefined, index);
     setShowDropZones(false);
+    setDraggedComponent(null);
   }, [onAddComponent]);
 
   const handleComponentDoubleClick = useCallback((componentId: string) => {
@@ -369,20 +397,19 @@ export function StripoCanvas({
                   <DropZone 
                     index={0} 
                     onDrop={handleDropComponent} 
-                    isVisible={showDropZones} 
+                    isVisible={draggedComponent !== null} 
                   />
                   
                   {template.components.map((component, index) => (
-                    <div key={component.id}>
+                    <React.Fragment key={component.id}>
                       {renderComponent(component, index)}
-                      
                       {/* Drop zone after each component */}
                       <DropZone 
                         index={index + 1} 
                         onDrop={handleDropComponent} 
-                        isVisible={showDropZones} 
+                        isVisible={draggedComponent !== null} 
                       />
-                    </div>
+                    </React.Fragment>
                   ))}
                 </div>
               )}

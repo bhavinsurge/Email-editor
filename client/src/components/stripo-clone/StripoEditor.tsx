@@ -269,8 +269,6 @@ export function StripoEditor({
             template={template}
             onClose={() => setShowExportModal(false)}
             onExport={(template) => handleExport('html')}
-            espIntegrations={[]}
-            user={user}
           />
         )}
       </div>
