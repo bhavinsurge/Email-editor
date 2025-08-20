@@ -34,7 +34,8 @@ import {
   Globe,
   Link,
   Eye,
-  EyeOff
+  EyeOff,
+  Mail
 } from 'lucide-react';
 import { StripoComponent, StripoEmailTemplate, StripoGlobalStyles, StripoComponentStyles } from '../types/stripo.types';
 
@@ -164,107 +165,26 @@ export function EnhancedPropertiesPanel({
                 value={selectedComponent.name || ''}
                 onChange={(e) => onComponentUpdate(selectedComponent.id, { name: e.target.value })}
                 className="mt-2"
-                placeholder={`${componentType} component`}
+                placeholder={`${componentType.charAt(0).toUpperCase() + componentType.slice(1)} Component`}
                 data-testid="input-component-name"
               />
             </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="componentVisible"
-                checked={!selectedComponent.hidden}
-                onCheckedChange={(checked) => onComponentUpdate(selectedComponent.id, { hidden: !checked })}
-                data-testid="switch-component-visible"
-              />
-              <Label htmlFor="componentVisible" className="text-sm">Visible</Label>
-              {selectedComponent.hidden ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-green-500" />}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="componentVisible" className="text-sm font-medium">Visible</Label>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="componentVisible"
+                  checked={!selectedComponent.hidden}
+                  onCheckedChange={(checked) => onComponentUpdate(selectedComponent.id, { hidden: !checked })}
+                  data-testid="switch-component-visible"
+                />
+                {selectedComponent.hidden ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-green-500" />}
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Text Components */}
-        {(componentType === 'text' || componentType === 'footer') && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center">
-                <Type className="w-4 h-4 mr-2" />
-                Text Content
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <Label htmlFor="textContent" className="text-sm font-medium">Content</Label>
-                <Textarea
-                  id="textContent"
-                  rows={6}
-                  value={selectedComponent.content?.text || ''}
-                  onChange={(e) => updateComponentContent({ text: e.target.value })}
-                  className="mt-2 font-mono text-sm"
-                  placeholder="Enter your text content... Use {{variables}} for personalization"
-                  data-testid="textarea-text-content"
-                />
-              </div>
-              
-              <div>
-                <Label className="text-sm font-medium mb-2 block">Quick Insert</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { label: 'First Name', tag: '{{firstName}}' },
-                    { label: 'Email', tag: '{{email}}' },
-                    { label: 'Company', tag: '{{company}}' },
-                    { label: 'Date', tag: '{{date}}' }
-                  ].map((item) => (
-                    <Button
-                      key={item.tag}
-                      variant="outline"
-                      size="sm"
-                      className="text-xs"
-                      onClick={() => {
-                        const currentText = selectedComponent.content?.text || '';
-                        updateComponentContent({ text: currentText + ' ' + item.tag });
-                      }}
-                      data-testid={`button-insert-${item.label.toLowerCase().replace(' ', '-')}`}
-                    >
-                      {item.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
-        {/* Heading Components */}
-        {componentType === 'heading' && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Heading Content</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <Label htmlFor="headingTitle" className="text-sm font-medium">Title</Label>
-                <Input
-                  id="headingTitle"
-                  value={selectedComponent.content?.title || selectedComponent.content?.text || ''}
-                  onChange={(e) => updateComponentContent({ title: e.target.value, text: e.target.value })}
-                  className="mt-2"
-                  placeholder="Main heading text"
-                  data-testid="input-heading-title"
-                />
-              </div>
-              <div>
-                <Label htmlFor="headingSubtitle" className="text-sm font-medium">Subtitle</Label>
-                <Input
-                  id="headingSubtitle"
-                  value={selectedComponent.content?.subtitle || ''}
-                  onChange={(e) => updateComponentContent({ subtitle: e.target.value })}
-                  className="mt-2"
-                  placeholder="Optional subtitle"
-                  data-testid="input-heading-subtitle"
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Image Components */}
         {componentType === 'image' && (
@@ -463,6 +383,152 @@ export function EnhancedPropertiesPanel({
           </Card>
         )}
 
+        {/* Form Components */}
+        {componentType === 'form' && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center">
+                <Mail className="w-4 h-4 mr-2" />
+                Form Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <Label htmlFor="formTitle" className="text-sm font-medium">Form Title</Label>
+                <Input
+                  id="formTitle"
+                  value={selectedComponent.content?.title || ''}
+                  onChange={(e) => updateComponentContent({ title: e.target.value })}
+                  className="mt-2"
+                  placeholder="Contact Form"
+                  data-testid="input-form-title"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="formButtonText" className="text-sm font-medium">Button Text</Label>
+                <Input
+                  id="formButtonText"
+                  value={selectedComponent.content?.buttonText || ''}
+                  onChange={(e) => updateComponentContent({ buttonText: e.target.value })}
+                  className="mt-2"
+                  placeholder="Submit"
+                  data-testid="input-form-button-text"
+                />
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <Label className="text-sm font-medium mb-3 block">Form Fields</Label>
+                <div className="space-y-3">
+                  {(selectedComponent.content?.fields || []).map((field: any, index: number) => (
+                    <div key={field.id} className="p-3 border border-gray-200 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="secondary" className="capitalize">{field.type}</Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newFields = (selectedComponent.content?.fields || []).filter((_: any, i: number) => i !== index);
+                            updateComponentContent({ fields: newFields });
+                          }}
+                          data-testid={`button-remove-field-${index}`}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 mb-2">
+                        <Input
+                          value={field.label}
+                          onChange={(e) => {
+                            const newFields = [...(selectedComponent.content?.fields || [])];
+                            newFields[index] = { ...field, label: e.target.value };
+                            updateComponentContent({ fields: newFields });
+                          }}
+                          placeholder="Field Label"
+                          className="text-sm"
+                          data-testid={`input-field-label-${index}`}
+                        />
+                        
+                        <Input
+                          value={field.placeholder}
+                          onChange={(e) => {
+                            const newFields = [...(selectedComponent.content?.fields || [])];
+                            newFields[index] = { ...field, placeholder: e.target.value };
+                            updateComponentContent({ fields: newFields });
+                          }}
+                          placeholder="Placeholder"
+                          className="text-sm"
+                          data-testid={`input-field-placeholder-${index}`}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <Select 
+                          value={field.type} 
+                          onValueChange={(value) => {
+                            const newFields = [...(selectedComponent.content?.fields || [])];
+                            newFields[index] = { ...field, type: value };
+                            updateComponentContent({ fields: newFields });
+                          }}
+                        >
+                          <SelectTrigger className="w-32" data-testid={`select-field-type-${index}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="text">Text</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="tel">Phone</SelectItem>
+                            <SelectItem value="number">Number</SelectItem>
+                            <SelectItem value="textarea">Textarea</SelectItem>
+                            <SelectItem value="select">Dropdown</SelectItem>
+                            <SelectItem value="checkbox">Checkbox</SelectItem>
+                            <SelectItem value="radio">Radio</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={field.required || false}
+                            onCheckedChange={(checked) => {
+                              const newFields = [...(selectedComponent.content?.fields || [])];
+                              newFields[index] = { ...field, required: checked };
+                              updateComponentContent({ fields: newFields });
+                            }}
+                            data-testid={`switch-field-required-${index}`}
+                          />
+                          <Label className="text-xs">Required</Label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const newField = {
+                      id: `field-${Date.now()}`,
+                      type: 'text',
+                      label: 'New Field',
+                      placeholder: 'Enter value',
+                      required: false
+                    };
+                    const newFields = [...(selectedComponent.content?.fields || []), newField];
+                    updateComponentContent({ fields: newFields });
+                  }}
+                  className="w-full mt-3"
+                  data-testid="button-add-form-field"
+                >
+                  Add Form Field
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Social Components */}
         {componentType === 'social' && (
           <Card>
@@ -520,6 +586,402 @@ export function EnhancedPropertiesPanel({
             </CardContent>
           </Card>
         )}
+
+        {/* Comprehensive Styling Properties for All Components */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center">
+              <Palette className="w-4 h-4 mr-2" />
+              Design & Styling
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Tabs defaultValue="style" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 gap-1">
+                <TabsTrigger value="style" className="text-xs">Style</TabsTrigger>
+                <TabsTrigger value="spacing" className="text-xs">Spacing</TabsTrigger>
+                <TabsTrigger value="border" className="text-xs">Border</TabsTrigger>
+                <TabsTrigger value="effects" className="text-xs">Effects</TabsTrigger>
+              </TabsList>
+              
+              {/* Style Tab */}
+              <TabsContent value="style" className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs font-medium">Background Color</Label>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Input
+                        type="color"
+                        value={selectedComponent.styles?.backgroundColor || '#ffffff'}
+                        onChange={(e) => updateComponentStyles({ backgroundColor: e.target.value })}
+                        className="w-12 h-8 p-1"
+                      />
+                      <Input
+                        value={selectedComponent.styles?.backgroundColor || '#ffffff'}
+                        onChange={(e) => updateComponentStyles({ backgroundColor: e.target.value })}
+                        className="text-xs"
+                        placeholder="#ffffff"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-xs font-medium">Text Color</Label>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Input
+                        type="color"
+                        value={selectedComponent.styles?.color || '#000000'}
+                        onChange={(e) => updateComponentStyles({ color: e.target.value })}
+                        className="w-12 h-8 p-1"
+                      />
+                      <Input
+                        value={selectedComponent.styles?.color || '#000000'}
+                        onChange={(e) => updateComponentStyles({ color: e.target.value })}
+                        className="text-xs"
+                        placeholder="#000000"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium">Font Family</Label>
+                  <Select 
+                    value={selectedComponent.styles?.fontFamily || 'Arial'} 
+                    onValueChange={(value) => updateComponentStyles({ fontFamily: value })}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Arial">Arial</SelectItem>
+                      <SelectItem value="Helvetica">Helvetica</SelectItem>
+                      <SelectItem value="Georgia">Georgia</SelectItem>
+                      <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                      <SelectItem value="Verdana">Verdana</SelectItem>
+                      <SelectItem value="Trebuchet MS">Trebuchet MS</SelectItem>
+                      <SelectItem value="Tahoma">Tahoma</SelectItem>
+                      <SelectItem value="Courier New">Courier New</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label className="text-xs font-medium">Font Size</Label>
+                    <Input
+                      type="number"
+                      value={parseInt(selectedComponent.styles?.fontSize || '16') || 16}
+                      onChange={(e) => updateComponentStyles({ fontSize: `${e.target.value}px` })}
+                      className="mt-1 text-xs"
+                      min="8"
+                      max="72"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-xs font-medium">Font Weight</Label>
+                    <Select 
+                      value={selectedComponent.styles?.fontWeight || 'normal'} 
+                      onValueChange={(value) => updateComponentStyles({ fontWeight: value })}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="bold">Bold</SelectItem>
+                        <SelectItem value="lighter">Light</SelectItem>
+                        <SelectItem value="100">Thin</SelectItem>
+                        <SelectItem value="300">Light</SelectItem>
+                        <SelectItem value="400">Regular</SelectItem>
+                        <SelectItem value="500">Medium</SelectItem>
+                        <SelectItem value="600">Semi Bold</SelectItem>
+                        <SelectItem value="700">Bold</SelectItem>
+                        <SelectItem value="900">Black</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-medium">Text Align</Label>
+                    <Select 
+                      value={selectedComponent.styles?.textAlign || 'left'} 
+                      onValueChange={(value) => updateComponentStyles({ textAlign: value as 'left' | 'center' | 'right' | 'justify' })}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="left">Left</SelectItem>
+                        <SelectItem value="center">Center</SelectItem>
+                        <SelectItem value="right">Right</SelectItem>
+                        <SelectItem value="justify">Justify</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium">Line Height</Label>
+                  <Slider
+                    value={[parseFloat(selectedComponent.styles?.lineHeight || '1.5')]}
+                    onValueChange={([value]) => updateComponentStyles({ lineHeight: value.toString() })}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    className="mt-2"
+                  />
+                  <div className="text-xs text-gray-500 mt-1">
+                    Current: {selectedComponent.styles?.lineHeight || '1.5'}
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Spacing Tab */}
+              <TabsContent value="spacing" className="space-y-3">
+                <div>
+                  <Label className="text-xs font-medium mb-2 block">Padding</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs text-gray-500">Top</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.paddingTop || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ paddingTop: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-500">Bottom</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.paddingBottom || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ paddingBottom: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-500">Left</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.paddingLeft || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ paddingLeft: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-500">Right</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.paddingRight || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ paddingRight: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium mb-2 block">Margin</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs text-gray-500">Top</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.marginTop || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ marginTop: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-500">Bottom</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.marginBottom || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ marginBottom: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-500">Left</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.marginLeft || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ marginLeft: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-500">Right</Label>
+                      <Input
+                        type="number"
+                        value={parseInt(selectedComponent.styles?.marginRight || '0') || 0}
+                        onChange={(e) => updateComponentStyles({ marginRight: `${e.target.value}px` })}
+                        className="text-xs"
+                        min="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Border Tab */}
+              <TabsContent value="border" className="space-y-3">
+                <div>
+                  <Label className="text-xs font-medium">Border</Label>
+                  <Input
+                    value={selectedComponent.styles?.border || ''}
+                    onChange={(e) => updateComponentStyles({ border: e.target.value })}
+                    className="mt-1 text-xs"
+                    placeholder="1px solid #000000"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium">Border Radius</Label>
+                  <Input
+                    type="number"
+                    value={parseInt(selectedComponent.styles?.borderRadius || '0') || 0}
+                    onChange={(e) => updateComponentStyles({ borderRadius: `${e.target.value}px` })}
+                    className="mt-1 text-xs"
+                    min="0"
+                    placeholder="Rounded corners"
+                  />
+                </div>
+              </TabsContent>
+
+              {/* Effects Tab */}
+              <TabsContent value="effects" className="space-y-3">
+                <div>
+                  <Label className="text-xs font-medium">Opacity</Label>
+                  <Slider
+                    value={[parseFloat(selectedComponent.styles?.opacity || '1') * 100]}
+                    onValueChange={([value]) => updateComponentStyles({ opacity: (value / 100).toString() })}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="mt-2"
+                  />
+                  <div className="text-xs text-gray-500 mt-1">
+                    Current: {Math.round((parseFloat(selectedComponent.styles?.opacity || '1')) * 100)}%
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium">Box Shadow</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <Input
+                      placeholder="0px 2px 4px"
+                      value={selectedComponent.styles?.boxShadow || ''}
+                      onChange={(e) => updateComponentStyles({ boxShadow: e.target.value })}
+                      className="text-xs"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateComponentStyles({ boxShadow: '0px 2px 8px rgba(0,0,0,0.1)' })}
+                      className="text-xs"
+                    >
+                      Preset
+                    </Button>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        {/* Responsive Settings */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center">
+              <Smartphone className="w-4 h-4 mr-2" />
+              Responsive Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-medium">Hide on Mobile</Label>
+              <Switch
+                checked={selectedComponent.settings?.hiddenOnMobile || false}
+                onCheckedChange={(checked) => updateComponentSettings({ hiddenOnMobile: checked })}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-medium">Hide on Desktop</Label>
+              <Switch
+                checked={selectedComponent.settings?.hiddenOnDesktop || false}
+                onCheckedChange={(checked) => updateComponentSettings({ hiddenOnDesktop: checked })}
+              />
+            </div>
+
+            <Separator />
+
+            <div>
+              <Label className="text-xs font-medium">Mobile Font Size Override</Label>
+              <Input
+                type="number"
+                value={(selectedComponent.settings as any)?.mobileFontSize || ''}
+                onChange={(e) => updateComponentSettings({ ...selectedComponent.settings, mobileFontSize: e.target.value })}
+                className="mt-1 text-xs"
+                placeholder="Auto"
+                min="8"
+                max="32"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Advanced Settings */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center">
+              <Settings className="w-4 h-4 mr-2" />
+              Advanced
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label className="text-xs font-medium">Custom CSS Classes</Label>
+              <Input
+                value={(selectedComponent.settings as any)?.customClasses || ''}
+                onChange={(e) => updateComponentSettings({ ...selectedComponent.settings, customClasses: e.target.value })}
+                className="mt-1 text-xs"
+                placeholder="class1 class2"
+              />
+            </div>
+            
+            <div>
+              <Label className="text-xs font-medium">HTML Attributes</Label>
+              <Textarea
+                rows={3}
+                value={(selectedComponent.settings as any)?.customAttributes || ''}
+                onChange={(e) => updateComponentSettings({ ...selectedComponent.settings, customAttributes: e.target.value })}
+                className="mt-1 text-xs font-mono"
+                placeholder='data-test="value" role="button"'
+              />
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-medium">Lock Component</Label>
+              <Switch
+                checked={(selectedComponent.settings as any)?.locked || false}
+                onCheckedChange={(checked) => updateComponentSettings({ ...selectedComponent.settings, locked: checked })}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };

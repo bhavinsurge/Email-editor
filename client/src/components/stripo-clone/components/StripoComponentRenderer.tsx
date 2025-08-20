@@ -202,22 +202,22 @@ export function StripoComponentRenderer({
       );
 
     case 'button':
-      const buttonText = component.content?.text || 'Click Here';
-      const buttonHref = component.content?.href || '#';
+      const btnText = component.content?.text || 'Click Here';
+      const btnHref = component.content?.href || '#';
 
       return (
         <div style={{ textAlign: reactStyles.textAlign as any, padding: reactStyles.padding }}>
           <a
-            href={buttonHref}
+            href={btnHref}
             style={{
               ...reactStyles,
               display: 'inline-block',
               textDecoration: 'none',
               cursor: 'pointer'
             }}
-            onDoubleClick={() => handleDoubleClick('text', buttonText)}
+            onDoubleClick={() => handleDoubleClick('text', btnText)}
           >
-            {processMergeTags(buttonText)}
+            {processMergeTags(btnText)}
           </a>
         </div>
       );
@@ -397,37 +397,234 @@ export function StripoComponentRenderer({
       );
 
     case 'form':
+      const formFields = component.content?.fields || [
+        { id: 'name', type: 'text', label: 'Your Name', placeholder: 'Enter your name', required: true },
+        { id: 'email', type: 'email', label: 'Your Email', placeholder: 'Enter your email', required: true }
+      ];
+      const formTitle = component.content?.title || 'Contact Form';
+      const formButtonText = component.content?.buttonText || 'Submit';
+
       return (
         <div style={reactStyles}>
-          <div className="space-y-4">
-            <Input placeholder="Your Name" />
-            <Input type="email" placeholder="Your Email" />
-            <Input placeholder="Subject" />
-            <textarea
-              className="w-full p-2 border border-gray-300 rounded-md"
-              rows={4}
-              placeholder="Your Message"
-            />
-            <Button className="w-full">Send Message</Button>
+          <div className="space-y-4 p-4 border border-gray-200 rounded-lg bg-white">
+            <h3 className="text-lg font-semibold mb-4" 
+                onDoubleClick={() => handleDoubleClick('title', formTitle)}>
+              {processMergeTags(formTitle)}
+            </h3>
+            
+            {formFields.map((field: any) => (
+              <div key={field.id} className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  {field.label}
+                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+                
+                {field.type === 'textarea' ? (
+                  <textarea
+                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                    rows={field.rows || 4}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                  />
+                ) : field.type === 'select' ? (
+                  <select className="w-full p-2 border border-gray-300 rounded-md text-sm" required={field.required}>
+                    <option value="">{field.placeholder}</option>
+                    {field.options?.map((option: any) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    className="text-sm"
+                  />
+                )}
+              </div>
+            ))}
+            
+            <Button 
+              className="w-full mt-4"
+              onDoubleClick={() => handleDoubleClick('buttonText', formButtonText)}
+            >
+              {processMergeTags(formButtonText)}
+            </Button>
           </div>
         </div>
       );
 
     case 'survey':
+      const surveyData = component.content?.surveyData || {
+        title: 'Follow Up Survey Form for Campaign',
+        questions: [
+          {
+            id: '1',
+            type: 'rating',
+            question: 'Overall, how satisfied are you with the campaign presented?',
+            required: true,
+            options: {
+              scale: 5,
+              labels: { min: 'Unsatisfied', max: 'Very satisfied' }
+            }
+          },
+          {
+            id: '2',
+            type: 'radio',
+            question: 'Did our campaign meet your expectations?',
+            required: true,
+            options: {
+              choices: ['Yes', 'No']
+            }
+          },
+          {
+            id: '3',
+            type: 'radio',
+            question: 'Have you learnt anything new from our campaign?',
+            required: false,
+            options: {
+              choices: ['Yes', 'No']
+            }
+          },
+          {
+            id: '4',
+            type: 'checkbox',
+            question: 'What aspect of the product or service were you most satisfied by?',
+            required: false,
+            options: {
+              choices: ['Quality', 'Design', 'Information', 'Campaigners', 'Other']
+            }
+          },
+          {
+            id: '5',
+            type: 'checkbox',
+            question: 'What aspect of the product or service were you least satisfied by?',
+            required: false,
+            options: {
+              choices: ['Quality', 'Design', 'Information', 'Campaigners', 'Other']
+            }
+          },
+          {
+            id: '6',
+            type: 'textarea',
+            question: 'Please explain why:',
+            required: false,
+            placeholder: 'Your feedback...'
+          },
+          {
+            id: '7',
+            type: 'radio',
+            question: 'Could we improve on anything for our campaign?',
+            required: false,
+            options: {
+              choices: ['Yes', 'No']
+            }
+          }
+        ],
+        submitButton: {
+          text: 'Submit',
+          backgroundColor: '#22c55e',
+          textColor: '#ffffff'
+        }
+      };
+
       return (
         <div style={reactStyles}>
-          <div className="p-4 border border-gray-200 rounded-lg bg-white">
-            <h3 className="font-semibold mb-3">Quick Survey</h3>
-            <p className="text-sm text-gray-600 mb-4">How satisfied are you with our service?</p>
-            <div className="space-y-2">
-              {['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'].map((option) => (
-                <label key={option} className="flex items-center">
-                  <input type="radio" name="satisfaction" className="mr-2" />
-                  <span className="text-sm">{option}</span>
-                </label>
+          <div className="max-w-2xl mx-auto p-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold mb-8 text-gray-900 dark:text-gray-100 text-center">
+              {surveyData.title}
+            </h2>
+            
+            <form className="space-y-8">
+              {surveyData.questions.map((question: any, index: number) => (
+                <div key={question.id} className="space-y-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {question.question}
+                    {question.required && <span className="text-red-500 ml-1">*</span>}
+                  </label>
+                  
+                  {question.type === 'rating' && (
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        {Array.from({ length: question.options.scale }, (_, i) => (
+                          <label key={i + 1} className="flex flex-col items-center space-y-2">
+                            <div className="w-10 h-10 border-2 border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                              <input 
+                                type="radio" 
+                                name={`question-${question.id}`} 
+                                value={i + 1}
+                                className="sr-only"
+                              />
+                              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{i + 1}</span>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <span>{question.options.labels.min}</span>
+                        <span>{question.options.labels.max}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {question.type === 'radio' && (
+                    <div className="space-y-2">
+                      {question.options.choices.map((choice: string, choiceIndex: number) => (
+                        <label key={choiceIndex} className="flex items-center space-x-3">
+                          <input 
+                            type="radio" 
+                            name={`question-${question.id}`} 
+                            value={choice}
+                            className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{choice}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {question.type === 'checkbox' && (
+                    <div className="space-y-2">
+                      {question.options.choices.map((choice: string, choiceIndex: number) => (
+                        <label key={choiceIndex} className="flex items-center space-x-3">
+                          <input 
+                            type="checkbox" 
+                            name={`question-${question.id}[]`} 
+                            value={choice}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{choice}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {question.type === 'textarea' && (
+                    <textarea 
+                      name={`question-${question.id}`}
+                      rows={4}
+                      placeholder={question.placeholder || 'Your answer...'}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    />
+                  )}
+                </div>
               ))}
-            </div>
-            <Button size="sm" className="mt-4">Submit</Button>
+              
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  style={{
+                    backgroundColor: surveyData.submitButton.backgroundColor,
+                    color: surveyData.submitButton.textColor
+                  }}
+                  className="px-8 py-3 rounded-md font-medium hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  {surveyData.submitButton.text}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       );
