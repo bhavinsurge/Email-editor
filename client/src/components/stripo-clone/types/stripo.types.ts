@@ -78,11 +78,13 @@ export type StripoComponentType =
   | 'survey'
   | 'game'
   | 'amp-carousel'
-  | 'amp-accordion'
+  | 'amp-accordion' 
   | 'amp-form'
   | 'amp-list'
   | 'amp-image'
   | 'amp-bind'
+  | 'countdown'
+  | 'columns'
   | 'custom';
 
 export interface StripoComponentContent {
@@ -91,12 +93,29 @@ export interface StripoComponentContent {
   src?: string;
   alt?: string;
   href?: string;
+  target?: string;
   title?: string;
   subtitle?: string;
   description?: string;
   items?: StripoContentItem[];
   variables?: StripoVariable[];
   dynamicContent?: StripoDynamicContent;
+  
+  // Video specific
+  poster?: string;
+  autoplay?: boolean;
+  height?: string;
+  
+  // Timer specific
+  endDate?: string;
+  expiredText?: string;
+  
+  // Layout specific
+  columns?: number;
+  gap?: string;
+  
+  // Additional properties for extensibility
+  [key: string]: any;
 }
 
 export interface StripoContentItem {
@@ -211,7 +230,7 @@ export interface StripoComponentStyles {
   filter?: string;
 
   // Flexbox
-  flexDirection?: string;
+  flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse';
   justifyContent?: string;
   alignItems?: string;
   alignSelf?: string;

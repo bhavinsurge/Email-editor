@@ -20,7 +20,7 @@ import {
   MessageSquare,
   ArrowUp,
   ArrowDown,
-  MoreHorizontal
+  Plus
 } from 'lucide-react';
 import { StripoEmailTemplate, StripoComponent, StripoUser, StripoComment, StripoGlobalStyles } from '../types/stripo.types';
 import { StripoComponentRenderer } from './StripoComponentRenderer';
@@ -43,6 +43,43 @@ interface StripoCanvasProps {
   globalStyles: StripoGlobalStyles;
 }
 
+interface DropZoneProps {
+  index: number;
+  onDrop: (type: string, index: number) => void;
+  isVisible: boolean;
+}
+
+function DropZone({ index, onDrop, isVisible }: DropZoneProps) {
+  const [{ isOver }, drop] = useDrop({
+    accept: 'component',
+    drop: (item: { type: string }) => {
+      onDrop(item.type, index);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver()
+    })
+  });
+
+  return (
+    <div
+      ref={drop}
+      className={`transition-all duration-200 ${
+        isVisible || isOver 
+          ? 'h-12 border-2 border-dashed border-blue-400 bg-blue-50 rounded-lg mb-4 flex items-center justify-center' 
+          : 'h-2'
+      }`}
+      data-testid={`drop-zone-${index}`}
+    >
+      {(isVisible || isOver) && (
+        <div className="flex items-center space-x-2 text-blue-600 text-sm">
+          <Plus className="w-4 h-4" />
+          <span>{isOver ? 'Drop component here' : 'Drop zone'}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StripoCanvas({
   template,
   selectedComponentId,
@@ -61,21 +98,23 @@ export function StripoCanvas({
   globalStyles
 }: StripoCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [showComments, setShowComments] = useState(true);
-  const [dragOverComponentId, setDragOverComponentId] = useState<string | null>(null);
+  const [showDropZones, setShowDropZones] = useState(false);
 
-  // Drop zone for new components
+  // Drop zone for canvas background
   const [{ isOver }, drop] = useDrop({
     accept: 'component',
     drop: (item: { type: string }, monitor) => {
       if (!monitor.didDrop()) {
-        // Add component to end if not dropped on specific component
-        onAddComponent(item.type, undefined, undefined);
+        // Add component to end if not dropped on specific drop zone
+        onAddComponent(item.type, undefined, template?.components.length || 0);
       }
     },
     collect: (monitor) => ({
       isOver: monitor.isOver({ shallow: true })
-    })
+    }),
+    hover: () => {
+      setShowDropZones(true);
+    }
   });
 
   const getCanvasStyles = () => {
@@ -103,36 +142,30 @@ export function StripoCanvas({
 
   const handleCanvasClick = useCallback(() => {
     onComponentSelect(null);
+    setShowDropZones(false);
   }, [onComponentSelect]);
 
+  const handleDropComponent = useCallback((type: string, index: number) => {
+    onAddComponent(type, undefined, index);
+    setShowDropZones(false);
+  }, [onAddComponent]);
+
   const handleComponentDoubleClick = useCallback((componentId: string) => {
-    // Enter inline editing mode
-    console.log('Enter edit mode for:', componentId);
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent, componentId: string) => {
-    e.preventDefault();
-    setDragOverComponentId(componentId);
-  }, []);
-
-  const handleDragLeave = useCallback(() => {
-    setDragOverComponentId(null);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent, componentId: string, index: number) => {
-    e.preventDefault();
-    setDragOverComponentId(null);
-    
-    const componentType = e.dataTransfer.getData('text/plain');
-    if (componentType) {
-      console.log('Dropping component:', componentType, 'at index:', index);
+    // Enter inline editing mode for text components
+    const component = template?.components.find(c => c.id === componentId);
+    if (component && (component.type === 'text' || component.type === 'heading')) {
+      // Enable inline editing
+      console.log('Enter edit mode for:', componentId);
     }
-  }, []);
+  }, [template]);
 
   const renderComponent = (component: StripoComponent, index: number) => {
     const isSelected = selectedComponentId === component.id;
-    const isDragOver = dragOverComponentId === component.id;
     const componentComments = comments.filter(c => c.componentId === component.id && !c.resolved);
+    const isHidden = (component.settings?.hiddenOnMobile && previewDevice === 'mobile') ||
+                     (component.settings?.hiddenOnDesktop && previewDevice === 'desktop');
+
+    if (isHidden) return null;
 
     return (
       <ContextMenu key={component.id}>
@@ -140,25 +173,17 @@ export function StripoCanvas({
           <div
             className={`relative group transition-all duration-200 ${
               isSelected 
-                ? 'ring-2 ring-blue-500 ring-offset-2' 
-                : 'hover:ring-1 hover:ring-gray-300'
-            } ${
-              isDragOver ? 'ring-2 ring-green-500 ring-offset-2' : ''
-            } ${
-              component.settings?.hiddenOnMobile && previewDevice === 'mobile' ? 'hidden' : ''
-            } ${
-              component.settings?.hiddenOnDesktop && previewDevice === 'desktop' ? 'hidden' : ''
+                ? 'ring-2 ring-blue-500 ring-offset-2 rounded-md' 
+                : 'hover:ring-1 hover:ring-gray-300 hover:ring-offset-1 rounded-md'
             }`}
             onClick={(e) => handleComponentClick(component.id, e)}
             onDoubleClick={() => handleComponentDoubleClick(component.id)}
-            onDragOver={(e) => handleDragOver(e, component.id)}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => handleDrop(e, component.id, index)}
+            data-testid={`component-${component.type}-${component.id}`}
           >
             {/* Component Toolbar */}
             {isSelected && (
               <div className="absolute -top-10 left-0 flex items-center space-x-1 bg-white shadow-lg rounded-md px-2 py-1 z-10 border">
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-xs capitalize">
                   {component.type}
                 </Badge>
                 <Button
@@ -170,70 +195,32 @@ export function StripoCanvas({
                     onComponentDuplicate(component.id);
                   }}
                   title="Duplicate"
+                  data-testid={`button-duplicate-${component.id}`}
                 >
                   <Copy className="w-3 h-3" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0"
+                  className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
                   onClick={(e) => {
                     e.stopPropagation();
                     onComponentDelete(component.id);
                   }}
                   title="Delete"
+                  data-testid={`button-delete-${component.id}`}
                 >
                   <Trash2 className="w-3 h-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0"
-                  title="More options"
-                >
-                  <MoreHorizontal className="w-3 h-3" />
                 </Button>
               </div>
             )}
 
             {/* Comments Indicator */}
-            {showComments && componentComments.length > 0 && (
-              <div className="absolute -top-2 -right-2 z-20">
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="h-6 w-6 p-0 bg-orange-500 hover:bg-orange-600 rounded-full"
-                  title={`${componentComments.length} comment(s)`}
-                >
-                  <MessageSquare className="w-3 h-3" />
-                  <span className="sr-only">{componentComments.length}</span>
-                </Button>
+            {componentComments.length > 0 && (
+              <div className="absolute top-2 right-2 w-5 h-5 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xs font-medium z-10">
+                {componentComments.length}
               </div>
             )}
-
-            {/* Collaborator Cursors */}
-            {collaborators
-              .filter(collab => collab.cursor?.componentId === component.id)
-              .map(collab => (
-                <div
-                  key={collab.id}
-                  className="absolute pointer-events-none z-30"
-                  style={{
-                    left: collab.cursor?.x || 0,
-                    top: collab.cursor?.y || 0
-                  }}
-                >
-                  <div className="flex items-center space-x-1">
-                    <div 
-                      className="w-3 h-3 rounded-full border-2 border-white"
-                      style={{ backgroundColor: getCollaboratorColor(collab.id) }}
-                    />
-                    <span className="text-xs bg-black text-white px-1 py-0.5 rounded">
-                      {collab.name}
-                    </span>
-                  </div>
-                </div>
-              ))}
 
             {/* Component Content */}
             <StripoComponentRenderer
@@ -243,31 +230,15 @@ export function StripoCanvas({
               globalStyles={globalStyles}
               onUpdate={(updates) => onComponentUpdate(component.id, updates)}
             />
-
-            {/* Drop Zone Indicators */}
-            <div
-              className={`absolute inset-x-0 -top-1 h-2 transition-all ${
-                isDragOver ? 'bg-green-400 opacity-50' : 'bg-transparent'
-              }`}
-              onDragOver={(e) => handleDragOver(e, component.id)}
-              onDrop={(e) => handleDrop(e, component.id, index)}
-            />
-            <div
-              className={`absolute inset-x-0 -bottom-1 h-2 transition-all ${
-                isDragOver ? 'bg-green-400 opacity-50' : 'bg-transparent'
-              }`}
-              onDragOver={(e) => handleDragOver(e, component.id)}
-              onDrop={(e) => handleDrop(e, component.id, index + 1)}
-            />
           </div>
         </ContextMenuTrigger>
 
         <ContextMenuContent>
-          <ContextMenuItem onClick={() => onComponentDuplicate(component.id)}>
+          <ContextMenuItem onClick={() => onComponentDuplicate(component.id)} data-testid={`menu-duplicate-${component.id}`}>
             <Copy className="w-4 h-4 mr-2" />
             Duplicate
           </ContextMenuItem>
-          <ContextMenuItem onClick={() => onComponentDelete(component.id)}>
+          <ContextMenuItem onClick={() => onComponentDelete(component.id)} data-testid={`menu-delete-${component.id}`}>
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
           </ContextMenuItem>
@@ -299,11 +270,25 @@ export function StripoCanvas({
             )}
           </ContextMenuItem>
           <ContextMenuSeparator />
-          <ContextMenuItem>
+          <ContextMenuItem 
+            onClick={() => {
+              if (index > 0) {
+                onComponentReorder(component.id, template?.components[index - 1]?.id || '', index, index - 1);
+              }
+            }}
+            disabled={index === 0}
+          >
             <ArrowUp className="w-4 h-4 mr-2" />
             Move Up
           </ContextMenuItem>
-          <ContextMenuItem>
+          <ContextMenuItem 
+            onClick={() => {
+              if (index < (template?.components.length || 0) - 1) {
+                onComponentReorder(component.id, template?.components[index + 1]?.id || '', index, index + 1);
+              }
+            }}
+            disabled={index === (template?.components.length || 0) - 1}
+          >
             <ArrowDown className="w-4 h-4 mr-2" />
             Move Down
           </ContextMenuItem>
@@ -323,8 +308,8 @@ export function StripoCanvas({
 
   if (!template) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="text-center text-gray-500">
+      <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center text-gray-500 dark:text-gray-400">
           <p className="text-lg mb-2">No template loaded</p>
           <p className="text-sm">Create a new template or load an existing one</p>
         </div>
@@ -333,38 +318,40 @@ export function StripoCanvas({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden">
+    <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden">
       {/* Canvas Container */}
       <div
         ref={drop}
-        className={`flex-1 overflow-auto p-6 ${isOver ? 'bg-blue-50' : ''}`}
+        className={`flex-1 overflow-auto p-6 ${isOver ? 'bg-blue-50 dark:bg-blue-950' : ''}`}
         onClick={handleCanvasClick}
+        onDragLeave={() => setShowDropZones(false)}
+        data-testid="canvas-container"
       >
         <div className="flex justify-center">
           <div
             ref={canvasRef}
-            className="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300"
+            className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300"
             style={getCanvasStyles()}
           >
             {/* Email Subject Preview */}
-            <div className="border-b border-gray-200 p-4 bg-gray-50">
-              <div className="text-sm text-gray-600 mb-1">Subject:</div>
-              <div className="font-medium text-gray-900">{template.subject}</div>
+            <div className="border-b border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800">
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Subject:</div>
+              <div className="font-medium text-gray-900 dark:text-gray-100">{template.subject || 'Untitled Email'}</div>
               {template.preheader && (
                 <>
-                  <div className="text-sm text-gray-600 mb-1 mt-2">Preheader:</div>
-                  <div className="text-sm text-gray-700">{template.preheader}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-2">Preheader:</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">{template.preheader}</div>
                 </>
               )}
             </div>
 
             {/* Email Content */}
-            <div className="min-h-96 relative">
+            <div className="min-h-96 relative p-4" data-testid="email-content">
               {template.components.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-96 text-gray-500 border-2 border-dashed border-gray-300 m-8 rounded-lg">
+                <div className="flex flex-col items-center justify-center h-96 text-gray-500 dark:text-gray-400 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                   <div className="text-center">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Start Building Your Email</h3>
-                    <p className="text-sm text-gray-500 mb-4">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Start Building Your Email</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                       Drag components from the sidebar to create your email template
                     </p>
                     <div className="flex flex-wrap justify-center gap-2 text-xs">
@@ -378,64 +365,31 @@ export function StripoCanvas({
                 </div>
               ) : (
                 <div className="space-y-0">
-                  {template.components.map((component, index) => 
-                    renderComponent(component, index)
-                  )}
+                  {/* Drop zone at the beginning */}
+                  <DropZone 
+                    index={0} 
+                    onDrop={handleDropComponent} 
+                    isVisible={showDropZones} 
+                  />
+                  
+                  {template.components.map((component, index) => (
+                    <div key={component.id}>
+                      {renderComponent(component, index)}
+                      
+                      {/* Drop zone after each component */}
+                      <DropZone 
+                        index={index + 1} 
+                        onDrop={handleDropComponent} 
+                        isVisible={showDropZones} 
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
-
-              {/* Drop zone at the end */}
-              <div
-                className={`h-8 transition-all ${
-                  isOver ? 'bg-green-100 border-2 border-dashed border-green-400' : ''
-                }`}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const componentType = e.dataTransfer.getData('text/plain');
-                  if (componentType) {
-                    console.log('Adding component at end:', componentType);
-                  }
-                }}
-              />
             </div>
           </div>
         </div>
       </div>
-
-      {/* Canvas Footer - Device Info */}
-      <div className="bg-white border-t border-gray-200 px-6 py-2 flex items-center justify-between text-sm text-gray-500">
-        <div className="flex items-center space-x-4">
-          <span>Device: {previewDevice}</span>
-          <span>Width: {getCanvasStyles().maxWidth}</span>
-          <span>Components: {template.components.length}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowComments(!showComments)}
-            className={showComments ? 'text-blue-600' : 'text-gray-500'}
-          >
-            <MessageSquare className="w-4 h-4 mr-1" />
-            Comments ({comments.filter(c => !c.resolved).length})
-          </Button>
-        </div>
-      </div>
     </div>
   );
-}
-
-// Helper function to get consistent colors for collaborators
-function getCollaboratorColor(userId: string): string {
-  const colors = [
-    '#ef4444', '#f97316', '#eab308', '#22c55e', 
-    '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
-  ];
-  
-  const hash = userId.split('').reduce((acc, char) => {
-    return char.charCodeAt(0) + ((acc << 5) - acc);
-  }, 0);
-  
-  return colors[Math.abs(hash) % colors.length];
 }
