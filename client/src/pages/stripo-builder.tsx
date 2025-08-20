@@ -386,12 +386,6 @@ export default function StripoBuilderPage() {
 
         onSave={handleSave}
         onExport={handleExport}
-        collaborationEnabled={true}
-        versionHistoryEnabled={true}
-        aiAssistantEnabled={true}
-        gameGeneratorEnabled={true}
-        customFontsEnabled={true}
-        ampSupport={true}
         className="stripo-professional-theme"
       />
     </div>

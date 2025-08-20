@@ -69,7 +69,7 @@ const advancedComponents = [
 ];
 
 const formComponents = [
-  { type: 'form' as const, label: 'Contact Form', icon: Mail, description: 'Lead capture forms' },
+  { type: 'form' as const, label: 'Form', icon: Mail, description: 'Customizable input fields' },
   { type: 'survey' as const, label: 'Survey', icon: User, description: 'Customer surveys' }
 ];
 
@@ -402,6 +402,21 @@ export function StripoSidebar({
                 </AccordionTrigger>
                 <AccordionContent className="grid grid-cols-1 gap-2">
                   {filteredMergeTags(mergeTags.products).map((tag) => (
+                    <MergeTagButton key={tag} tag={tag} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Campaign Tags */}
+              <AccordionItem value="campaign">
+                <AccordionTrigger className="text-sm font-medium">
+                  🎯 Campaign / System
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {filteredMergeTags(mergeTags.campaign).length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="grid grid-cols-1 gap-2">
+                  {filteredMergeTags(mergeTags.campaign).map((tag) => (
                     <MergeTagButton key={tag} tag={tag} />
                   ))}
                 </AccordionContent>
